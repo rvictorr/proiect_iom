@@ -131,6 +131,9 @@ class CoolWindow(QMainWindow):
     def file_open_clicked(self):
         filePath, selectedFilter = QFileDialog.getOpenFileName(self, 'Open Image', "",
                                                'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
+        if not filePath:
+            return
+
         self.orig_image = QImage()
         self.processed_image = QImage()
 
@@ -149,7 +152,10 @@ class CoolWindow(QMainWindow):
             prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
             return
 
-        filePath = QFileDialog.getSaveFileName(self, 'Save File')
+        filePath, selectedFilter = QFileDialog.getSaveFileName(self, 'Save File') #TODO: add filters for image formats (separated)
+        if not filePath:
+            return
+
         self.processed_image.save(filePath)
 
     def init_images_layout(self): # TODO: implement scaling math and maybe tidy it up a bit
