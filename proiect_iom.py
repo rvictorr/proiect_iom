@@ -11,10 +11,10 @@ class Window(QMainWindow):
         #self.setWindowIcon(QIcon('logo.png'))
 
         # Label for fileMenu object Open
-        extractAction = QAction("&Open", self)
-        extractAction.setShortcut("Ctrl+O")
-        extractAction.setStatusTip('Open file from disk.')
-        extractAction.triggered.connect(self.close_application)
+        openAction = QAction("&Open", self)
+        openAction.setShortcut("Ctrl+O")
+        openAction.setStatusTip('Open file from disk.')
+        openAction.triggered.connect(self.close_application)
 
         # Label for editMenu object Grayscale
         editAction0 = QAction("&Grayscale", self)
@@ -35,7 +35,7 @@ class Window(QMainWindow):
         helpAction.setShortcut("Ctrl+H")
         helpAction.setStatusTip('Show information about the program.')
         # replace w/ display About pop-up function call
-        helpAction.triggered.connect(self.close_application)
+        helpAction.triggered.connect(self.help_about)
 
         self.statusBar()
 
@@ -43,7 +43,7 @@ class Window(QMainWindow):
         mainMenu = self.menuBar()
 
         fileMenu = mainMenu.addMenu('&File')
-        fileMenu.addAction(extractAction)
+        fileMenu.addAction(openAction)
 
         editMenu = mainMenu.addMenu('&Edit')
         editMenu.addAction(editAction0)
@@ -77,18 +77,18 @@ class Window(QMainWindow):
         self.show()
 
     def close_application(self):
-        choice = QtGui.QMessageBox.question(self, 'Extract!',
-                                            "Get into the chopper?",
-                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-        if choice == QtGui.QMessageBox.Yes:
-            print("Extracting Naaaaaaoooww!!!!")
+        choice = QMessageBox.question(self, 'Quit Program?',
+                                            "Are you sure you want to close the program? Unsaved changes may be lost.",
+                                            QMessageBox.Yes | QMessageBox.No)
+        if choice == QMessageBox.Yes:
+            print("Closing program.")
             sys.exit()
         else:
             pass
-
         print("Application closed.")
-        sys.exit()
 
+    def help_about(self):
+        prompt = QMessageBox.information(self, 'About', "String cu despre program si plm.")
 
 
         '''
