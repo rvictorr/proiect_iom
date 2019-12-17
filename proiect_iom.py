@@ -11,10 +11,16 @@ class Window(QMainWindow):
         #self.setWindowIcon(QIcon('logo.png'))
 
         # Label for fileMenu object Open
-        openAction = QAction("&Open", self)
+        openAction = QAction("&Open File", self)
         openAction.setShortcut("Ctrl+O")
         openAction.setStatusTip('Open file from disk.')
-        openAction.triggered.connect(self.close_application)
+        openAction.triggered.connect(self.file_open)
+
+        # Label for fileMenu object Save
+        saveAction = QAction("&Save File", self)
+        saveAction.setShortcut("Ctrl+S")
+        saveAction.setStatusTip('Save file to disk.')
+        saveAction.triggered.connect(self.close_application)
 
         # Label for editMenu object Grayscale
         editAction0 = QAction("&Grayscale", self)
@@ -44,6 +50,7 @@ class Window(QMainWindow):
 
         fileMenu = mainMenu.addMenu('&File')
         fileMenu.addAction(openAction)
+        fileMenu.addAction(saveAction)
 
         editMenu = mainMenu.addMenu('&Edit')
         editMenu.addAction(editAction0)
@@ -90,16 +97,14 @@ class Window(QMainWindow):
     def help_about(self):
         prompt = QMessageBox.information(self, 'About', "String cu despre program si plm.")
 
+    def file_open(self):
+        fileName = QFileDialog.getOpenFileName(self, 'Open Image', "", 'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
+        return fileName
 
-        '''
-        # File Browser
-        openFile = QAction("&Open File", self)
-        openFile.setShortcut("Ctrl+O")
-        openFile.setStatusTip('Open File')
-        openFile.triggered.connect(self.file_open)
-        '''
 
-        # fileMenu.addAction(file_open)
+
+
+
 
 # Function to run App
 def run():
