@@ -17,88 +17,102 @@ class CoolWindow(QMainWindow):
         # self.setWindowIcon(QIcon('logo.png'))
 
         # Label for fileMenu object Open
-        openAction = QAction("&Open File", self)
-        openAction.setShortcut("Ctrl+O")
-        openAction.setStatusTip('Open file from disk.')
-        openAction.triggered.connect(self.file_open_clicked)
+        self.openAction = QAction("&Open File", self)
+        self.openAction.setShortcut("Ctrl+O")
+        self.openAction.setStatusTip('Open file from disk.')
+        self.openAction.triggered.connect(self.file_open_clicked)
 
         # Label for fileMenu object Save
-        saveAction = QAction("&Save File", self)
-        saveAction.setShortcut("Ctrl+S")
-        saveAction.setStatusTip('Save file to disk.')
-        saveAction.triggered.connect(self.file_save_clicked)
+        self.saveAction = QAction("&Save File", self)
+        self.saveAction.setShortcut("Ctrl+S")
+        self.saveAction.setStatusTip('Save file to disk.')
+        self.saveAction.triggered.connect(self.file_save_clicked)
 
-        exitAction = QAction("&Exit", self)
-        exitAction.setShortcut("Ctrl+Q")
-        exitAction.setStatusTip('Exit program.')
-        exitAction.triggered.connect(self.close_application_clicked)
+        self.exitAction = QAction("&Exit", self)
+        self.exitAction.setShortcut("Ctrl+Q")
+        self.exitAction.setStatusTip('Exit program.')
+        self.exitAction.triggered.connect(self.close_application_clicked)
 
         # Label for editMenu object Grayscale
-        grayScaleAction = QAction("&Grayscale", self)
-        grayScaleAction.setShortcut("Ctrl+G")
-        grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
+        self.grayScaleAction = QAction("&Grayscale", self)
+        self.grayScaleAction.setShortcut("Ctrl+G")
+        self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         # TODO: replace w/ compute and display grayscale function call
-        grayScaleAction.triggered.connect(self.grayscale_clicked)
+        self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
 
         # Label for editMenu object Grayscale
-        binarizeAction = QAction("&Binarize", self)
-        binarizeAction.setShortcut("Ctrl+B")
-        binarizeAction.setStatusTip('Biarize currently selected image using selected thresholds.')
+        self.binarizeAction = QAction("&Binarize", self)
+        self.binarizeAction.setShortcut("Ctrl+B")
+        self.binarizeAction.setStatusTip('Biarize currently selected image using selected thresholds.')
         # TODO: replace w/ compute and display binarize function call
-        binarizeAction.triggered.connect(self.binarize_clicked)
+        self.binarizeAction.triggered.connect(self.binarize_clicked)
 
         # Label for helpMenu object About
-        helpAction = QAction("&About", self)
-        helpAction.setShortcut("Ctrl+H")
-        helpAction.setStatusTip('Show information about the program.')
+        self.helpAction = QAction("&About", self)
+        self.helpAction.setShortcut("Ctrl+H")
+        self.helpAction.setStatusTip('Show information about the program.')
         # replace w/ display About pop-up function call
-        helpAction.triggered.connect(self.help_about_clicked)
+        self.helpAction.triggered.connect(self.help_about_clicked)
 
-        statusBar = self.statusBar()
+        self.statusBar = self.statusBar()
 
         # Menu bar definition
-        mainMenu = self.menuBar()
+        self.mainMenu = self.menuBar()
 
-        fileMenu = mainMenu.addMenu('&File')
-        fileMenu.addAction(openAction)
-        fileMenu.addAction(saveAction)
-        fileMenu.addSeparator()
-        fileMenu.addAction(exitAction)
+        self.fileMenu = self.mainMenu.addMenu('&File')
+        self.fileMenu.addAction(self.openAction)
+        self.fileMenu.addAction(self.saveAction)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.exitAction)
 
-        editMenu = mainMenu.addMenu('&Edit')
-        editMenu.addAction(grayScaleAction)
-        editMenu.addAction(binarizeAction)
+        self.editMenu = self.mainMenu.addMenu('&Edit')
+        self.editMenu.addAction(self.grayScaleAction)
+        self.editMenu.addAction(self.binarizeAction)
 
-        helpMenu = mainMenu.addMenu('&Help')
-        helpMenu.addAction(helpAction)
+        self.helpMenu = self.mainMenu.addMenu('&Help')
+        self.helpMenu.addAction(self.helpAction)
+
+        self.windowCentralWidget = QWidget()
+        self.setCentralWidget(self.windowCentralWidget)
+        self.imagesLayout = QHBoxLayout()
+        self.centralWidget().setLayout(self.imagesLayout)
+
+        self.orig_image = QImage()
+        self.processed_image = QImage()
 
         self.home()
+
+        print(self.imagesLayout.geometry().width())
+        print(self.imagesLayout.geometry().height())
+        print(self.layout())
 
     def grayscale_clicked(self):
         if self.orig_image is None:
             prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+
+        self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
+        self.afterImgLabel.update()
 
     def binarize_clicked(self):
         if self.orig_image is None:
             prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
 
     def home(self):
-        btn = QPushButton("Quit", self)
-        btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        btn.resize(60, 40)
-        btn.move(860, 440)
+        # btn = QPushButton("Quit", self)
+        # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+        # btn.setGeometry(860, 440, 60, 40)
 
         # Toolbar Label for Grayscale
         grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
-        grayAction.triggered.connect(self.close_application_clicked)
+        grayAction.triggered.connect(self.grayscale_clicked)
 
         # Toolbar Label for Binarize
         binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.',
                                  self)
-        binarizeAction.triggered.connect(self.close_application_clicked)
+        binarizeAction.triggered.connect(self.binarize_clicked)
 
-        # Toolbar defintion
+        # Toolbar definition
         self.toolBar = self.addToolBar("Edit Options")
         self.toolBar.addAction(grayAction)
         self.toolBar.addAction(binarizeAction)
@@ -120,12 +134,35 @@ class CoolWindow(QMainWindow):
         prompt = QMessageBox.information(self, 'About', "String cu despre program si plm.")
 
     def file_open_clicked(self):
-        filePath = QFileDialog.getOpenFileName(self, 'Open Image', "",
+        filePath, selectedFilter = QFileDialog.getOpenFileName(self, 'Open Image', "",
                                                'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
-        self.orig_image = QImage(filePath)
-        self.processed_image = self.orig_image
+        self.orig_image.load(filePath)
+        self.processed_image.load(filePath)
+
+        self.init_images_layout()
+
+        self.beforeImgLabel.update()
+        self.afterImgLabel.update()
+
         return filePath
 
     def file_save_clicked(self):
+        if self.processed_image is None:
+            prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
+
         filePath = QFileDialog.getSaveFileName(self, 'Save File')
         self.processed_image.save(filePath)
+
+    def init_images_layout(self): # TODO: implement scaling math and maybe tidy it up a bit
+        self.beforeImgPixMap = QPixmap(self.orig_image)
+        self.beforeImgLabel = QLabel()
+        self.beforeImgLabel.resize(500, 500)
+        self.beforeImgLabel.setPixmap(self.beforeImgPixMap.scaledToHeight(self.beforeImgLabel.height()))
+        self.imagesLayout.addWidget(self.beforeImgLabel)
+
+        self.afterImgPixMap = QPixmap(self.processed_image)
+        self.afterImgLabel = QLabel()
+        self.afterImgLabel.resize(500, 500)
+        self.afterImgLabel.setPixmap(self.afterImgPixMap.scaledToHeight(self.afterImgLabel.height()))
+        self.imagesLayout.addWidget(self.afterImgLabel)
