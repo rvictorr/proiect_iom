@@ -20,27 +20,28 @@ class Window(QMainWindow):
         saveAction = QAction("&Save File", self)
         saveAction.setShortcut("Ctrl+S")
         saveAction.setStatusTip('Save file to disk.')
-        saveAction.triggered.connect(self.close_application)
+        saveAction.triggered.connect(self.file_save)
 
         # Label for editMenu object Grayscale
         editAction0 = QAction("&Grayscale", self)
         editAction0.setShortcut("Ctrl+G")
         editAction0.setStatusTip('Convert currently selected image to grayscale.')
-        # replace w/ compute and display grayscale function call
+        # TO DO
+        # replace w/ compute grayscale function call
         editAction0.triggered.connect(self.close_application)
 
         # Label for editMenu object Grayscale
         editAction1 = QAction("&Binarize", self)
         editAction1.setShortcut("Ctrl+B")
         editAction1.setStatusTip('Biarize currently selected image using selected thresholds.')
-        # replace w/ compute and display binarize function call
+        # TO DO
+        # replace w/ compute binarize function call
         editAction1.triggered.connect(self.close_application)
 
         # Label for helpMenu object About
         helpAction = QAction("&About", self)
         helpAction.setShortcut("Ctrl+H")
         helpAction.setStatusTip('Show information about the program.')
-        # replace w/ display About pop-up function call
         helpAction.triggered.connect(self.help_about)
 
         self.statusBar()
@@ -101,9 +102,8 @@ class Window(QMainWindow):
         fileName = QFileDialog.getOpenFileName(self, 'Open Image', "", 'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
         return fileName
 
-
-
-
+    def file_save(self):
+        path = QFileDialog.getSaveFileName(self, 'Save File')
 
 
 # Function to run App
