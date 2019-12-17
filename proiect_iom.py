@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import *
 
 class Window(QMainWindow):
@@ -39,7 +39,7 @@ class Window(QMainWindow):
 
         self.statusBar()
 
-        # Menu bar deffinition
+        # Menu bar definition
         mainMenu = self.menuBar()
 
         fileMenu = mainMenu.addMenu('&File')
@@ -60,9 +60,32 @@ class Window(QMainWindow):
         btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         btn.resize(60, 40)
         btn.move(860, 440)
+
+        # Toolbar Label for Grayscale
+        grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
+        grayAction.triggered.connect(self.close_application)
+
+        # Toolbar Label for Binarize
+        binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.', self)
+        binarizeAction.triggered.connect(self.close_application)
+
+        # Toolbar defintion
+        self.toolBar = self.addToolBar("Edit Options")
+        self.toolBar.addAction(grayAction)
+        self.toolBar.addAction(binarizeAction)
+
         self.show()
 
     def close_application(self):
+        choice = QtGui.QMessageBox.question(self, 'Extract!',
+                                            "Get into the chopper?",
+                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if choice == QtGui.QMessageBox.Yes:
+            print("Extracting Naaaaaaoooww!!!!")
+            sys.exit()
+        else:
+            pass
+
         print("Application closed.")
         sys.exit()
 
