@@ -78,18 +78,12 @@ class CoolWindow(QMainWindow):
         self.imagesLayout = QHBoxLayout()
         self.centralWidget().setLayout(self.imagesLayout)
 
-        self.orig_image = QImage()
-        self.processed_image = QImage()
-
         self.home()
-
-        print(self.imagesLayout.geometry().width())
-        print(self.imagesLayout.geometry().height())
-        print(self.layout())
 
     def grayscale_clicked(self):
         if self.orig_image is None:
             prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
 
         self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
         self.afterImgLabel.update()
@@ -97,6 +91,7 @@ class CoolWindow(QMainWindow):
     def binarize_clicked(self):
         if self.orig_image is None:
             prompt = QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
 
     def home(self):
         # btn = QPushButton("Quit", self)
@@ -136,6 +131,9 @@ class CoolWindow(QMainWindow):
     def file_open_clicked(self):
         filePath, selectedFilter = QFileDialog.getOpenFileName(self, 'Open Image', "",
                                                'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
+        self.orig_image = QImage()
+        self.processed_image = QImage()
+
         self.orig_image.load(filePath)
         self.processed_image.load(filePath)
 
