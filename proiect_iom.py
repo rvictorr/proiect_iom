@@ -1,6 +1,6 @@
 import sys
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
-from PyQt5 import QtGui, QtCore
 
 class Window(QMainWindow):
 
@@ -10,16 +10,47 @@ class Window(QMainWindow):
         self.setWindowTitle("pRo ImAgE eDiToR")
         #self.setWindowIcon(QIcon('logo.png'))
 
-        extractAction = QtGui.QAction("&GET TO THE CHOPPAH!!!", self)
-        extractAction.setShortcut("Ctrl+Q")
-        extractAction.setStatusTip('Leave The App')
+        # Label for fileMenu object Open
+        extractAction = QAction("&Open", self)
+        extractAction.setShortcut("Ctrl+O")
+        extractAction.setStatusTip('Open file from disk.')
         extractAction.triggered.connect(self.close_application)
+
+        # Label for editMenu object Grayscale
+        editAction0 = QAction("&Grayscale", self)
+        editAction0.setShortcut("Ctrl+G")
+        editAction0.setStatusTip('Convert currently selected image to grayscale.')
+        # replace w/ compute and display grayscale function call
+        editAction0.triggered.connect(self.close_application)
+
+        # Label for editMenu object Grayscale
+        editAction1 = QAction("&Binarize", self)
+        editAction1.setShortcut("Ctrl+B")
+        editAction1.setStatusTip('Biarize currently selected image using selected thresholds.')
+        # replace w/ compute and display binarize function call
+        editAction1.triggered.connect(self.close_application)
+
+        # Label for helpMenu object About
+        helpAction = QAction("&About", self)
+        helpAction.setShortcut("Ctrl+H")
+        helpAction.setStatusTip('Show information about the program.')
+        # replace w/ display About pop-up function call
+        helpAction.triggered.connect(self.close_application)
 
         self.statusBar()
 
+        # Menu bar deffinition
         mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu('&File')
 
+        fileMenu = mainMenu.addMenu('&File')
+        fileMenu.addAction(extractAction)
+
+        editMenu = mainMenu.addMenu('&Edit')
+        editMenu.addAction(editAction0)
+        editMenu.addAction(editAction1)
+
+        helpMenu = mainMenu.addMenu('&Help')
+        helpMenu.addAction(helpAction)
 
         self.home()
 
@@ -32,7 +63,7 @@ class Window(QMainWindow):
         self.show()
 
     def close_application(self):
-        print("whooaaaa so custom!!!")
+        print("Application closed.")
         sys.exit()
 
 
