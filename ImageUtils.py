@@ -32,12 +32,10 @@ def binarize(img: QImage, thr1, thr2):
     return QImage(bin_arr1, bin_arr1.shape[1], bin_arr1.shape[0], QImage.Format_Grayscale8)
 
 def rgbEdit(img: QImage, rVal, gVal, bVal):
+    # TODO : Logic is broken, contorl works tho
     ptr = img.bits()
     ptr.setsize(img.byteCount())
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
-
-    if bytesPerPixel == 1:
-        return img
 
     arr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
     # add values to each channel

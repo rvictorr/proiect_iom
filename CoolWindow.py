@@ -68,10 +68,10 @@ class CoolWindow(QMainWindow):
         self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
         # Label for editMenu object RGB Edit
-        self.redifyAction = QAction('&RGB Edit', self)
-        self.redifyAction.setShortcut('Ctrl+R')
-        self.redifyAction.setStatusTip('Edit the RGB values of the current image.')
-        self.binarizeAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+        self.rgbEditAction = QAction('&RGB Edit', self)
+        self.rgbEditAction.setShortcut('Ctrl+R')
+        self.rgbEditAction.setStatusTip('Edit the RGB values of the current image.')
+        self.rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
 
         # Label for helpMenu object About
         self.helpAction = QAction('&About', self)
@@ -93,6 +93,7 @@ class CoolWindow(QMainWindow):
         self.editMenu = self.mainMenu.addMenu('&Edit')
         self.editMenu.addAction(self.grayScaleAction)
         self.editMenu.addAction(self.binarizeAction)
+        self.editMenu.addAction(self.rgbEditAction)
 
         self.helpMenu = self.mainMenu.addMenu('&Help')
         self.helpMenu.addAction(self.helpAction)
@@ -125,8 +126,6 @@ class CoolWindow(QMainWindow):
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
 
-        ###==>
-
         def thread_func():
             def onUpdate():
                 print('binarization onUpdate called')
@@ -136,6 +135,27 @@ class CoolWindow(QMainWindow):
 
             self.binarizationWindow.timerCallback = onUpdate
             self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
+
+        self.pool.apply_async(thread_func)
+
+    def rgbEdit_clicked(self, pos):
+        if self.orig_image is None:
+            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
+
+        print('rgbEdit click pos: {}'.format(pos))
+        self.rgbEditWindow.move(pos)
+        self.rgbEditWindow.show()
+
+        def thread_func():
+            def onUpdate():
+                print('rgbEdit onUpdate called')
+                rVal, gVal, bVal = self.rgbEditWindow.getSliderValues()
+                self.processed_image = ImageUtils.rgbEdit(self.orig_image, rVal, gVal, bVal)
+                self.update_after_image()
+
+            self.rgbEditWindow.timerCallback = onUpdate
+            self.rgbEditWindow.resetTimer()  # needed because we changed timerCallback
 
         self.pool.apply_async(thread_func)
 
@@ -153,12 +173,18 @@ class CoolWindow(QMainWindow):
                                  self)
         binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
+        # Toolbar Label for RGB Edit
+        rgbEditAction = QAction(QtGui.QIcon('rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
+                                 self)
+        rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+
         # Toolbar definition
         self.toolBar = QToolBar('Edit Options')
         self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
         self.toolBar.addAction(grayAction)
         self.toolBar.addAction(binarizeAction)
+        self.toolBar.addAction(rgbEditAction)
 
         self.show()
 
