@@ -24,8 +24,8 @@ class CoolWindow(QMainWindow):
 
         self.binarizationWindow = BinarizationWindow(self, 'Binarize')
 
-        self.width = QApplication.desktop().screenGeometry().width() // 1.5
-        self.height = QApplication.desktop().screenGeometry().height() // 1.5
+        self.width = QApplication.desktop().screenGeometry().width() // 3
+        self.height = QApplication.desktop().screenGeometry().height() // 3
         self.setGeometry(QStyle.alignedRect(
             QtCore.Qt.LeftToRight,
             QtCore.Qt.AlignCenter,
@@ -111,7 +111,7 @@ class CoolWindow(QMainWindow):
         self.pool.apply_async(thread_func)
 
     def binarize_clicked(self, pos):
-        if self.orig_image is None:  # TODO uncomment
+        if self.orig_image is None:
             QMessageBox.critical(self, 'Error', 'You\'re an idiot')
             return
 
@@ -120,7 +120,6 @@ class CoolWindow(QMainWindow):
         self.binarizationWindow.show()
 
         def thread_func():
-            # TODO: add some kind of interface to adjust the thresholds
             def onUpdate():
                 print('binarization onUpdate called')
                 thr1, thr2 = self.binarizationWindow.getThresholds()
