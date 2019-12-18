@@ -7,11 +7,11 @@ def rgb2grayscale(img: QImage):
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
     # print('original image bpp:{}'.format(bytesPerPixel))
 
-    if bytesPerPixel is 1:
+    if bytesPerPixel == 1:
         return img
 
     arr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
-    mat = [0.2989, 0.5870, 0.1140, 0] if bytesPerPixel is 4 else [0.2989, 0.5870, 0.1140]
+    mat = [0.2989, 0.5870, 0.1140, 0] if bytesPerPixel == 4 else [0.2989, 0.5870, 0.1140]
     grayArr = np.array(np.dot(arr, mat), dtype=np.uint8)
 
     return QImage(grayArr, grayArr.shape[1], grayArr.shape[0], QImage.Format_Grayscale8)

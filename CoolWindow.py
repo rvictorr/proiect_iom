@@ -14,10 +14,10 @@ class CoolWindow(QMainWindow):
         self.orig_image = None
         self.processed_image = None
 
-        self.beforeImgPixMap = None
-        self.beforeImgLabel = None
-        self.afterImgPixMap = None
-        self.afterImgLabel = None
+        self.beforeImgPixMap = QPixmap()
+        self.beforeImgLabel = AspectRatioPixmapLabel()
+        self.afterImgPixMap = QPixmap()
+        self.afterImgLabel = AspectRatioPixmapLabel()
 
         self.width = QApplication.desktop().screenGeometry().width() // 1.5
         self.height = QApplication.desktop().screenGeometry().height() // 1.5
@@ -88,6 +88,8 @@ class CoolWindow(QMainWindow):
 
         self.windowCentralWidget = QSplitter()
         self.setCentralWidget(self.windowCentralWidget)
+        self.centralWidget().addWidget(self.beforeImgLabel)
+        self.centralWidget().addWidget(self.afterImgLabel)
 
         self.home()
 
@@ -147,13 +149,15 @@ class CoolWindow(QMainWindow):
         if not filePath:
             return
 
-        self.orig_image = QImage()
-        self.processed_image = QImage()
+        if self.orig_image is None:
+            self.orig_image = QImage()
+            self.processed_image = QImage()
 
         self.orig_image.load(filePath)
         self.processed_image.load(filePath)
 
-        self.init_images_layout()
+        self.update_before_image()
+        self.update_after_image()
 
         self.beforeImgLabel.update()
         self.afterImgLabel.update()
@@ -175,18 +179,12 @@ class CoolWindow(QMainWindow):
 
         self.processed_image.save(filePath)
 
+    def update_before_image(self):
+        self.beforeImgPixMap.convertFromImage(self.orig_image)
+        self.beforeImgLabel.setPixmap(self.beforeImgPixMap)
+        self.beforeImgLabel.update()
+
     def update_after_image(self):
         self.afterImgPixMap.convertFromImage(self.processed_image)
         self.afterImgLabel.setPixmap(self.afterImgPixMap)
         self.afterImgLabel.update()
-
-    def init_images_layout(self):
-        self.beforeImgPixMap = QPixmap(self.orig_image)
-        self.beforeImgLabel = AspectRatioPixmapLabel()
-        self.beforeImgLabel.setPixmap(self.beforeImgPixMap)
-        self.centralWidget().addWidget(self.beforeImgLabel)
-
-        self.afterImgPixMap = QPixmap(self.processed_image)
-        self.afterImgLabel = AspectRatioPixmapLabel()
-        self.afterImgLabel.setPixmap(self.afterImgPixMap)
-        self.centralWidget().addWidget(self.afterImgLabel)
