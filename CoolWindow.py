@@ -57,6 +57,11 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
+        # Label for editMenu object Redify
+        self.redifyAction = QAction('&Redify', self)
+        self.redifyAction.setShortcut('Ctrl+R')
+        self.redifyAction.setStatusTip('Boost Red Channel of currently selected image.')
+        self.redifyAction.triggered.connect(self.redify_clicked)
 
         # Label for editMenu object Grayscale
         self.binarizeAction = QAction('&Binarize', self)
@@ -86,6 +91,7 @@ class CoolWindow(QMainWindow):
         self.editMenu = self.mainMenu.addMenu('&Edit')
         self.editMenu.addAction(self.grayScaleAction)
         self.editMenu.addAction(self.binarizeAction)
+        self.editMenu.addAction(self.redifyAction)
 
         self.helpMenu = self.mainMenu.addMenu('&Help')
         self.helpMenu.addAction(self.helpAction)
@@ -104,6 +110,18 @@ class CoolWindow(QMainWindow):
 
         def thread_func():
             self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
+            # TODO: fix bug with opening files from desktop
+            self.update_after_image()
+
+        self.pool.apply_async(thread_func)
+
+    def redify_clicked(self):
+        if self.orig_image is None:
+            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
+
+        def thread_func():
+            self.processed_image = ImageUtils.redify(self.orig_image)
             # TODO: fix bug with opening files from desktop
             self.update_after_image()
 

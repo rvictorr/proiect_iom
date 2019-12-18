@@ -1,7 +1,6 @@
 from PyQt5.QtGui import QImage
 import numpy as np
 
-
 def rgb2grayscale(img: QImage):
     ptr = img.bits()
     ptr.setsize(img.byteCount())
@@ -17,7 +16,6 @@ def rgb2grayscale(img: QImage):
 
     return QImage(grayArr, grayArr.shape[1], grayArr.shape[0], QImage.Format_Grayscale8)
 
-
 def binarize(img: QImage, thr1, thr2):
     img = rgb2grayscale(img)  # convert it to grayscale first, we don't need RGB
 
@@ -31,8 +29,7 @@ def binarize(img: QImage, thr1, thr2):
 
     return QImage(bin_arr1, bin_arr1.shape[1], bin_arr1.shape[0], QImage.Format_Grayscale8)
 
-
-def redify(img: QImage, val):
+def redify(img: QImage):
     ptr = img.bits()
     ptr.setsize(img.byteCount())
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
@@ -40,7 +37,6 @@ def redify(img: QImage, val):
     if bytesPerPixel == 1:
         return img
 
-    redArr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
-    redArr[:, :, 0] = 255;
+    arr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
 
-    return QImage(redArr, redArr.shape[1], redArr.shape[0], QImage.Format_ARGB32)
+
