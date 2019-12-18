@@ -1,4 +1,5 @@
 import sys
+from multiprocessing.pool import ThreadPool
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -11,6 +12,7 @@ class CoolWindow(QMainWindow):
     def __init__(self):
         super(CoolWindow, self).__init__()
 
+        self.pool = ThreadPool(processes=1)
         self.orig_image = None
         self.processed_image = None
 
@@ -45,7 +47,7 @@ class CoolWindow(QMainWindow):
         self.exitAction = QAction('&Exit', self)
         self.exitAction.setShortcut('Ctrl+Q')
         self.exitAction.setStatusTip('Exit program.')
-        self.exitAction.triggered.connect(self.close_application_clicked)
+        self.exitAction.triggered.connect(self.close)
 
         # Label for editMenu object Grayscale
         self.grayScaleAction = QAction('&Grayscale', self)
@@ -86,7 +88,7 @@ class CoolWindow(QMainWindow):
         self.helpMenu = self.mainMenu.addMenu('&Help')
         self.helpMenu.addAction(self.helpAction)
 
-        self.windowCentralWidget = QSplitter()
+        self.windowCentralWidget = QSplitter()  # TODO: maybe disable dragging?
         self.setCentralWidget(self.windowCentralWidget)
         self.centralWidget().addWidget(self.beforeImgLabel)
         self.centralWidget().addWidget(self.afterImgLabel)
@@ -98,13 +100,23 @@ class CoolWindow(QMainWindow):
             QMessageBox.critical(self, 'Error', 'You\'re an idiot')
             return
 
-        self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
-        self.update_after_image()
+        def thread_func():
+            self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
+            self.update_after_image()
+
+        self.pool.apply_async(thread_func)
 
     def binarize_clicked(self):
         if self.orig_image is None:
             QMessageBox.critical(self, 'Error', 'You\'re an idiot')
             return
+
+        def thread_func():
+            # TODO: add some kind of interface to adjust the thresholds
+            self.processed_image = ImageUtils.binarize(self.orig_image, 127, 127)
+            self.update_after_image()
+
+        self.pool.apply_async(thread_func)
 
     def home(self):
         # btn = QPushButton('Quit', self)
@@ -129,16 +141,25 @@ class CoolWindow(QMainWindow):
 
         self.show()
 
-    def close_application_clicked(self):
+    def closeEvent(self, event):
+        print('close event')
+        if not self.show_close_program_prompt():
+            event.ignore()
+            return
+
+        self.pool.close()
+        self.pool.join()
+        event.accept()
+
+    def show_close_program_prompt(self):
         choice = QMessageBox.question(self, 'Quit Program?',
                                       'Are you sure you want to close the program? Unsaved changes may be lost.',
                                       QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             print('Closing program.')
-            sys.exit()
-        else:
-            pass
-        print('Application closed.')
+            return True
+
+        return False
 
     def help_about_clicked(self):
         QMessageBox.information(self, 'About', 'String cu despre program si plm.')
@@ -149,20 +170,22 @@ class CoolWindow(QMainWindow):
         if not filePath:
             return
 
-        if self.orig_image is None:
-            self.orig_image = QImage()
-            self.processed_image = QImage()
+        def thread_func():  # really janky code but it works if you're careful with it (we should use locks n shit)
+            if self.orig_image is None:
+                self.orig_image = QImage()
+                self.processed_image = QImage()
 
-        self.orig_image.load(filePath)
-        self.processed_image.load(filePath)
+            self.orig_image.load(filePath)
+            self.processed_image.load(filePath)
 
-        self.update_before_image()
-        self.update_after_image()
+            self.update_before_image()
+            self.update_after_image()
 
-        self.beforeImgLabel.update()
-        self.afterImgLabel.update()
+            self.beforeImgLabel.update()
+            self.afterImgLabel.update()
+            print('Finished opening image')
 
-        return filePath
+        self.pool.apply_async(thread_func)
 
     def file_save_clicked(self):
         if self.processed_image is None:
@@ -177,7 +200,11 @@ class CoolWindow(QMainWindow):
         if not filePath:
             return
 
-        self.processed_image.save(filePath)
+        def thread_func():
+            self.processed_image.save(filePath)
+            print('Finished saving image')
+
+        self.pool.apply_async(thread_func)
 
     def update_before_image(self):
         self.beforeImgPixMap.convertFromImage(self.orig_image)
