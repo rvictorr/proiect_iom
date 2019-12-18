@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QImage
 import numpy as np
 
+
 def rgb2grayscale(img: QImage):
     ptr = img.bits()
     ptr.setsize(img.byteCount())
@@ -15,6 +16,7 @@ def rgb2grayscale(img: QImage):
     grayArr = np.array(np.dot(arr, mat), dtype=np.uint8)
 
     return QImage(grayArr, grayArr.shape[1], grayArr.shape[0], QImage.Format_Grayscale8)
+
 
 def binarize(img: QImage, thr1, thr2):
     img = rgb2grayscale(img)  # convert it to grayscale first, we don't need RGB

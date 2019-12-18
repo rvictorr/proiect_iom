@@ -1,9 +1,9 @@
-import sys
 from multiprocessing.pool import ThreadPool
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import ImageUtils
+from BinarizationWindow import BinarizationWindow
 from AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
 
@@ -20,6 +20,8 @@ class CoolWindow(QMainWindow):
         self.beforeImgLabel = AspectRatioPixmapLabel()
         self.afterImgPixMap = QPixmap()
         self.afterImgLabel = AspectRatioPixmapLabel()
+
+        self.binarizationWindow = BinarizationWindow(self)
 
         self.width = QApplication.desktop().screenGeometry().width() // 1.5
         self.height = QApplication.desktop().screenGeometry().height() // 1.5
@@ -59,9 +61,9 @@ class CoolWindow(QMainWindow):
         # Label for editMenu object Grayscale
         self.binarizeAction = QAction('&Binarize', self)
         self.binarizeAction.setShortcut('Ctrl+B')
-        self.binarizeAction.setStatusTip('Biarize currently selected image using selected thresholds.')
+        self.binarizeAction.setStatusTip('Binarize currently selected image using selected thresholds.')
         # TODO: replace w/ compute and display binarize function call
-        self.binarizeAction.triggered.connect(self.binarize_clicked)
+        self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
         # Label for helpMenu object About
         self.helpAction = QAction('&About', self)
@@ -102,21 +104,26 @@ class CoolWindow(QMainWindow):
 
         def thread_func():
             self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
+            # TODO: fix bug with opening files from desktop
             self.update_after_image()
 
         self.pool.apply_async(thread_func)
 
-    def binarize_clicked(self):
-        if self.orig_image is None:
-            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
-            return
+    def binarize_clicked(self, pos):
+        # if self.orig_image is None:  # TODO uncomment
+        #     QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+        #     return
+
+        print('binarization click pos: {}'.format(pos))
+        self.binarizationWindow.move(pos)
+        self.binarizationWindow.show()
 
         def thread_func():
             # TODO: add some kind of interface to adjust the thresholds
-            self.processed_image = ImageUtils.binarize(self.orig_image, 127, 127)
+            self.processed_image = ImageUtils.binarize(self.orig_image, 80, 180)
             self.update_after_image()
 
-        self.pool.apply_async(thread_func)
+        # self.pool.apply_async(thread_func)
 
     def home(self):
         # btn = QPushButton('Quit', self)
@@ -130,7 +137,7 @@ class CoolWindow(QMainWindow):
         # Toolbar Label for Binarize
         binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.',
                                  self)
-        binarizeAction.triggered.connect(self.binarize_clicked)
+        binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
         # Toolbar definition
         self.toolBar = QToolBar('Edit Options')
