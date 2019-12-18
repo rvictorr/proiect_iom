@@ -89,5 +89,5 @@ class BinarizationWindow(QWidget):
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
         self.updateTimer.start()
 
-    def getThresholds(self):
+    def getSliderValues(self):
         return self.thr1, self.thr2

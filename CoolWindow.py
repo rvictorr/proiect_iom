@@ -24,8 +24,8 @@ class CoolWindow(QMainWindow):
 
         self.binarizationWindow = BinarizationWindow(self, 'Binarize')
 
-        self.width = QApplication.desktop().screenGeometry().width() // 3
-        self.height = QApplication.desktop().screenGeometry().height() // 3
+        self.width = QApplication.desktop().screenGeometry().width() // 2
+        self.height = QApplication.desktop().screenGeometry().height() // 2
         self.setGeometry(QStyle.alignedRect(
             QtCore.Qt.LeftToRight,
             QtCore.Qt.AlignCenter,
@@ -122,7 +122,7 @@ class CoolWindow(QMainWindow):
         def thread_func():
             def onUpdate():
                 print('binarization onUpdate called')
-                thr1, thr2 = self.binarizationWindow.getThresholds()
+                thr1, thr2 = self.binarizationWindow.getSliderValues()
                 self.processed_image = ImageUtils.binarize(self.orig_image, thr1, thr2)
                 self.update_after_image()
 
