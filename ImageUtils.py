@@ -17,7 +17,7 @@ def rgb2grayscale(img: QImage):
     return QImage(grayArr, grayArr.shape[1], grayArr.shape[0], QImage.Format_Grayscale8)
 
 def binarize(img: QImage, thr1, thr2):
-    img = rgb2grayscale(img)
+    img = rgb2grayscale(img)  # convert it to grayscale first, we don't need RGB
 
     ptr = img.bits()
     ptr.setsize(img.byteCount())
