@@ -57,10 +57,10 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
-        # Label for editMenu object Redify
-        self.redifyAction = QAction('&Redify', self)
+        # Label for editMenu object RGB Edit
+        self.redifyAction = QAction('&RGB Edit', self)
         self.redifyAction.setShortcut('Ctrl+R')
-        self.redifyAction.setStatusTip('Boost Red Channel of currently selected image.')
+        self.redifyAction.setStatusTip('Edit the RGB values of the current image.')
         self.redifyAction.triggered.connect(self.redify_clicked)
 
         # Label for editMenu object Grayscale
@@ -83,6 +83,7 @@ class CoolWindow(QMainWindow):
         self.mainMenu = self.menuBar()
 
         self.fileMenu = self.mainMenu.addMenu('&File')
+        self.redifyfileMenu = self.mainMenu.addMenu('&File')
         self.fileMenu.addAction(self.openAction)
         self.fileMenu.addAction(self.saveAction)
         self.fileMenu.addSeparator()
@@ -152,6 +153,10 @@ class CoolWindow(QMainWindow):
         grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
         grayAction.triggered.connect(self.grayscale_clicked)
 
+        # Toolbar Label for Grayscale
+        redifyAction = QAction(QtGui.QIcon('redify.png'), 'Boost red levels of currently selected image.', self)
+        redifyAction.triggered.connect(self.redify_clicked)
+
         # Toolbar Label for Binarize
         binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.',
                                  self)
@@ -163,6 +168,7 @@ class CoolWindow(QMainWindow):
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
         self.toolBar.addAction(grayAction)
         self.toolBar.addAction(binarizeAction)
+        self.toolBar.addAction(redifyAction)
 
         self.show()
 

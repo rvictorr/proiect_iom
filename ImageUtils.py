@@ -32,7 +32,7 @@ def binarize(img: QImage, thr1, thr2):
     return QImage(bin_arr1, bin_arr1.shape[1], bin_arr1.shape[0], QImage.Format_Grayscale8)
 
 
-def redify(img: QImage, val):
+def rgbEdit(img: QImage, rVal, gVal, bVal):
     ptr = img.bits()
     ptr.setsize(img.byteCount())
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
@@ -40,7 +40,12 @@ def redify(img: QImage, val):
     if bytesPerPixel == 1:
         return img
 
-    redArr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
-    redArr[:, :, 0] = 255;
+    arr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
+    # add values to each channel
+    arr[:, :, 0] += rVal
+    arr[:, :, 0] += gVal
+    arr[:, :, 0] += bVal
+    arr[arr < 0] = 0
+    arr[arr > 255] = 255
 
-    return QImage(redArr, redArr.shape[1], redArr.shape[0], QImage.Format_ARGB32)
+    return QImage(arr, arr.shape[1], arr.shape[0], QImage.Format_ARGB32)
