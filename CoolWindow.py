@@ -1,4 +1,5 @@
 from multiprocessing.pool import ThreadPool
+from threading import Timer
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -21,7 +22,7 @@ class CoolWindow(QMainWindow):
         self.afterImgPixMap = QPixmap()
         self.afterImgLabel = AspectRatioPixmapLabel()
 
-        self.binarizationWindow = BinarizationWindow(self)
+        self.binarizationWindow = BinarizationWindow(self, 'Binarize')
 
         self.width = QApplication.desktop().screenGeometry().width() // 1.5
         self.height = QApplication.desktop().screenGeometry().height() // 1.5
@@ -110,9 +111,9 @@ class CoolWindow(QMainWindow):
         self.pool.apply_async(thread_func)
 
     def binarize_clicked(self, pos):
-        # if self.orig_image is None:  # TODO uncomment
-        #     QMessageBox.critical(self, 'Error', 'You\'re an idiot')
-        #     return
+        if self.orig_image is None:  # TODO uncomment
+            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
 
         print('binarization click pos: {}'.format(pos))
         self.binarizationWindow.move(pos)
@@ -120,10 +121,16 @@ class CoolWindow(QMainWindow):
 
         def thread_func():
             # TODO: add some kind of interface to adjust the thresholds
-            self.processed_image = ImageUtils.binarize(self.orig_image, 80, 180)
-            self.update_after_image()
+            def onUpdate():
+                print('binarization onUpdate called')
+                thr1, thr2 = self.binarizationWindow.getThresholds()
+                self.processed_image = ImageUtils.binarize(self.orig_image, thr1, thr2)
+                self.update_after_image()
 
-        # self.pool.apply_async(thread_func)
+            self.binarizationWindow.timerCallback = onUpdate
+            self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
+
+        self.pool.apply_async(thread_func)
 
     def home(self):
         # btn = QPushButton('Quit', self)
