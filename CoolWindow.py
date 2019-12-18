@@ -3,17 +3,30 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import ImageUtils
+from AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
 
 class CoolWindow(QMainWindow):
 
     def __init__(self):
-        super(CoolWindow, self).__init__(flags=None)
+        super(CoolWindow, self).__init__()
 
         self.orig_image = None
         self.processed_image = None
 
-        self.setGeometry(50, 50, 950, 500)
+        self.beforeImgPixMap = None
+        self.beforeImgLabel = None
+        self.afterImgPixMap = None
+        self.afterImgLabel = None
+
+        self.width = QApplication.desktop().screenGeometry().width() // 1.5
+        self.height = QApplication.desktop().screenGeometry().height() // 1.5
+        self.setGeometry(QStyle.alignedRect(
+            QtCore.Qt.LeftToRight,
+            QtCore.Qt.AlignCenter,
+            QtCore.QSize(self.width, self.height),
+            QApplication.desktop().screenGeometry()
+        ))
         self.setWindowTitle('pRo ImAgE eDiToR')
         # self.setWindowIcon(QIcon('logo.png'))
 
@@ -38,7 +51,6 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction = QAction('&Grayscale', self)
         self.grayScaleAction.setShortcut('Ctrl+G')
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
-        # TODO: replace w/ compute and display grayscale function call
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
 
@@ -74,10 +86,8 @@ class CoolWindow(QMainWindow):
         self.helpMenu = self.mainMenu.addMenu('&Help')
         self.helpMenu.addAction(self.helpAction)
 
-        self.windowCentralWidget = QWidget()
+        self.windowCentralWidget = QSplitter()
         self.setCentralWidget(self.windowCentralWidget)
-        self.imagesLayout = QHBoxLayout()
-        self.centralWidget().setLayout(self.imagesLayout)
 
         self.home()
 
@@ -87,7 +97,7 @@ class CoolWindow(QMainWindow):
             return
 
         self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
-        self.afterImgLabel.update()
+        self.update_after_image()
 
     def binarize_clicked(self):
         if self.orig_image is None:
@@ -165,15 +175,18 @@ class CoolWindow(QMainWindow):
 
         self.processed_image.save(filePath)
 
-    def init_images_layout(self): # TODO: implement scaling math and maybe tidy it up a bit
+    def update_after_image(self):
+        self.afterImgPixMap.convertFromImage(self.processed_image)
+        self.afterImgLabel.setPixmap(self.afterImgPixMap)
+        self.afterImgLabel.update()
+
+    def init_images_layout(self):
         self.beforeImgPixMap = QPixmap(self.orig_image)
-        self.beforeImgLabel = QLabel()
-        self.beforeImgLabel.resize(500, 500)
-        self.beforeImgLabel.setPixmap(self.beforeImgPixMap.scaledToHeight(self.beforeImgLabel.height()))
-        self.imagesLayout.addWidget(self.beforeImgLabel)
+        self.beforeImgLabel = AspectRatioPixmapLabel()
+        self.beforeImgLabel.setPixmap(self.beforeImgPixMap)
+        self.centralWidget().addWidget(self.beforeImgLabel)
 
         self.afterImgPixMap = QPixmap(self.processed_image)
-        self.afterImgLabel = QLabel()
-        self.afterImgLabel.resize(500, 500)
-        self.afterImgLabel.setPixmap(self.afterImgPixMap.scaledToHeight(self.afterImgLabel.height()))
-        self.imagesLayout.addWidget(self.afterImgLabel)
+        self.afterImgLabel = AspectRatioPixmapLabel()
+        self.afterImgLabel.setPixmap(self.afterImgPixMap)
+        self.centralWidget().addWidget(self.afterImgLabel)
