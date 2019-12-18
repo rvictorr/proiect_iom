@@ -30,8 +30,8 @@ class RgbEditWindow(QWidget):
         self.gValSlider.valueChanged.connect(self.gValSliderChangeValue)
         self.bValSlider.valueChanged.connect(self.bValSliderChangeValue)
 
-        self.rValSlider.setMinimum(-255)
-        self.rValSlider.setMaximum(255)
+        self.rValSlider.setMinimum(0)
+        self.rValSlider.setMaximum(10)
 
         self.gValSlider.setMinimum(-255)
         self.gValSlider.setMaximum(255)
@@ -75,6 +75,9 @@ class RgbEditWindow(QWidget):
     def rValSliderChangeValue(self, value, force=False):
         self.rVal = value
 
+        if force:
+            self.rValSlider.setSliderPosition(value)
+
         self.rValSliderLabel.setText(str(self.rVal))
         print('rVal new value:{}'.format(self.rVal))
         self.resetTimer()
@@ -82,12 +85,18 @@ class RgbEditWindow(QWidget):
     def gValSliderChangeValue(self, value, force=False):
         self.gVal = value
 
+        if force:
+            self.gValSlider.setSliderPosition(value)
+
         self.gValSliderLabel.setText(str(self.gVal))
         print('gVal new value:{}'.format(self.gVal))
         self.resetTimer()
 
     def bValSliderChangeValue(self, value, force=False):
         self.bVal = value
+
+        if force:
+            self.bValSlider.setSliderPosition(value)
 
         self.bValSliderLabel.setText(str(self.bVal))
         print('bVal new value:{}'.format(self.bVal))
