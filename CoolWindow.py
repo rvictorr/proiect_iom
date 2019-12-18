@@ -5,6 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import ImageUtils
 from BinarizationWindow import BinarizationWindow
+from RgbEditWindow import RgbEditWindow
 from AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
 
@@ -23,6 +24,7 @@ class CoolWindow(QMainWindow):
         self.afterImgLabel = AspectRatioPixmapLabel()
 
         self.binarizationWindow = BinarizationWindow(self, 'Binarize')
+        self.rgbEditWindow = RgbEditWindow(self, 'RGB Edit')
 
         self.width = QApplication.desktop().screenGeometry().width() // 2
         self.height = QApplication.desktop().screenGeometry().height() // 2
@@ -32,8 +34,8 @@ class CoolWindow(QMainWindow):
             QtCore.QSize(self.width, self.height),
             QApplication.desktop().screenGeometry()
         ))
-        self.setWindowTitle('pRo ImAgE eDiToR')
-        # self.setWindowIcon(QIcon('logo.png'))
+        self.setWindowTitle('GIE Pro v0.5 (Ghetto Image Editor)')
+        self.setWindowIcon(QIcon('logo.jpg'))
 
         # Label for fileMenu object Open
         self.openAction = QAction('&Open File', self)
@@ -47,6 +49,7 @@ class CoolWindow(QMainWindow):
         self.saveAction.setStatusTip('Save file to disk.')
         self.saveAction.triggered.connect(self.file_save_clicked)
 
+        # Label for fileMenu object Exit
         self.exitAction = QAction('&Exit', self)
         self.exitAction.setShortcut('Ctrl+Q')
         self.exitAction.setStatusTip('Exit program.')
@@ -58,19 +61,22 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
-
-        # Label for editMenu object Grayscale
+        # Label for editMenu object Binarize
         self.binarizeAction = QAction('&Binarize', self)
         self.binarizeAction.setShortcut('Ctrl+B')
         self.binarizeAction.setStatusTip('Binarize currently selected image using selected thresholds.')
-        # TODO: replace w/ compute and display binarize function call
         self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
+
+        # Label for editMenu object RGB Edit
+        self.redifyAction = QAction('&RGB Edit', self)
+        self.redifyAction.setShortcut('Ctrl+R')
+        self.redifyAction.setStatusTip('Edit the RGB values of the current image.')
+        self.binarizeAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
 
         # Label for helpMenu object About
         self.helpAction = QAction('&About', self)
         self.helpAction.setShortcut('Ctrl+H')
         self.helpAction.setStatusTip('Show information about the program.')
-        # replace w/ display About pop-up function call
         self.helpAction.triggered.connect(self.help_about_clicked)
 
         self.statusBar = self.statusBar()
@@ -118,6 +124,8 @@ class CoolWindow(QMainWindow):
         print('binarization click pos: {}'.format(pos))
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
+
+        ###==>
 
         def thread_func():
             def onUpdate():
