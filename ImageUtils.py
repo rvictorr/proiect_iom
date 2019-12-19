@@ -57,8 +57,8 @@ def rgbEdit(img: QImage, rVal, gVal, bVal):
 
     arr = np.asarray(ptr, dtype=np.int32).reshape((img.height(), img.width(), bytesPerPixel))
     # add values to each channel
-    arr[:, :, 0] += rVal
-    arr[:, :, 0] += gVal
+    arr[:, :, 2] += rVal
+    arr[:, :, 1] += gVal
     arr[:, :, 0] += bVal
     arr[arr < 0] = 0
     arr[arr > 255] = 255
