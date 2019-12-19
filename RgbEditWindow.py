@@ -30,8 +30,8 @@ class RgbEditWindow(QWidget):
         self.gValSlider.valueChanged.connect(self.gValSliderChangeValue)
         self.bValSlider.valueChanged.connect(self.bValSliderChangeValue)
 
-        self.rValSlider.setMinimum(0)
-        self.rValSlider.setMaximum(10)
+        self.rValSlider.setMinimum(-255)
+        self.rValSlider.setMaximum(255)
 
         self.gValSlider.setMinimum(-255)
         self.gValSlider.setMaximum(255)
