@@ -187,7 +187,7 @@ class CoolWindow(QMainWindow):
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
                 rVal, gVal, bVal = sliderValues
-                self.processed_image = ImageUtils.rgbEdit(self.orig_image, rVal, gVal, bVal)
+                self.processed_image = ImageUtils.rgbEdit(img, rVal, gVal, bVal)
 
             def result_func(result):  # for some reason this doesn't get called
                 print('Result came')

@@ -58,12 +58,13 @@ def rgbEdit(img: QImage, rVal, gVal, bVal):
     ptr.setsize(img.byteCount())
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
 
-    arr = np.asarray(ptr).reshape((img.height(), img.width(), bytesPerPixel))
+    arr = np.asarray(ptr, dtype=np.int32).reshape((img.height(), img.width(), bytesPerPixel))
     # add values to each channel
     arr[:, :, 0] += rVal
     arr[:, :, 0] += gVal
     arr[:, :, 0] += bVal
     arr[arr < 0] = 0
     arr[arr > 255] = 255
+    arr = np.array(arr, dtype=np.uint8)
 
     return QImage(arr, arr.shape[1], arr.shape[0], QImage.Format_ARGB32)
