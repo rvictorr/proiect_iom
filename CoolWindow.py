@@ -1,3 +1,5 @@
+from multiprocessing.pool import ThreadPool
+from threading import Timer
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -5,6 +7,7 @@ from PyQt5.QtCore import QThreadPool
 import ImageUtils
 from Worker import Worker
 from BinarizationWindow import BinarizationWindow
+from RgbEditWindow import RgbEditWindow
 from AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
 
@@ -25,6 +28,7 @@ class CoolWindow(QMainWindow):
         self.afterImgLabel = AspectRatioPixmapLabel()
 
         self.binarizationWindow = BinarizationWindow(self, 'Binarize')
+        self.rgbEditWindow = RgbEditWindow(self, 'RGB Edit')
 
         self.width = QApplication.desktop().screenGeometry().width() // 2
         self.height = QApplication.desktop().screenGeometry().height() // 2
@@ -34,8 +38,8 @@ class CoolWindow(QMainWindow):
             QtCore.QSize(self.width, self.height),
             QApplication.desktop().screenGeometry()
         ))
-        self.setWindowTitle('pRo ImAgE eDiToR')
-        # self.setWindowIcon(QIcon('logo.png'))
+        self.setWindowTitle('GIE Pro v0.5 (Ghetto Image Editor)')
+        self.setWindowIcon(QIcon('logo.jpg'))
 
         # Label for fileMenu object Open
         self.openAction = QAction('&Open File', self)
@@ -49,6 +53,7 @@ class CoolWindow(QMainWindow):
         self.saveAction.setStatusTip('Save file to disk.')
         self.saveAction.triggered.connect(self.file_save_clicked)
 
+        # Label for fileMenu object Exit
         self.exitAction = QAction('&Exit', self)
         self.exitAction.setShortcut('Ctrl+Q')
         self.exitAction.setStatusTip('Exit program.')
@@ -60,11 +65,17 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
-        # Label for editMenu object Grayscale
+        # Label for editMenu object Binarize
         self.binarizeAction = QAction('&Binarize', self)
         self.binarizeAction.setShortcut('Ctrl+B')
         self.binarizeAction.setStatusTip('Binarize currently selected image using selected thresholds.')
         self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
+
+        # Label for editMenu object RGB Edit
+        self.rgbEditAction = QAction('&RGB Edit', self)
+        self.rgbEditAction.setShortcut('Ctrl+R')
+        self.rgbEditAction.setStatusTip('Edit the RGB values of the current image.')
+        self.rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
 
         # Label for helpMenu object About
         self.helpAction = QAction('&About', self)
@@ -87,6 +98,7 @@ class CoolWindow(QMainWindow):
         self.editMenu = self.mainMenu.addMenu('&Edit')
         self.editMenu.addAction(self.grayScaleAction)
         self.editMenu.addAction(self.binarizeAction)
+        self.editMenu.addAction(self.rgbEditAction)
 
         self.helpMenu = self.mainMenu.addMenu('&Help')
         self.helpMenu.addAction(self.helpAction)
@@ -163,6 +175,33 @@ class CoolWindow(QMainWindow):
         #
         # self.threadpool.start(worker)
 
+    def rgbEdit_clicked(self, pos):
+        if self.orig_image is None:
+            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            return
+
+        print('rgbEdit click pos: {}'.format(pos))
+        self.rgbEditWindow.move(pos)
+        self.rgbEditWindow.show()
+
+        def onTimerReset():
+            def thread_func(progress_callback, img, sliderValues):
+                rVal, gVal, bVal = sliderValues
+                self.processed_image = ImageUtils.rgbEdit(self.orig_image, rVal, gVal, bVal)
+
+            def result_func(result):  # for some reason this doesn't get called
+                print('Result came')
+                self.processed_image = result
+
+            worker = Worker(thread_func, img=self.orig_image, sliderValues=self.rgbEditWindow.getSliderValues())
+            worker.signals.result.connect(result_func)
+            worker.signals.finished.connect(self.update_after_image)
+
+            self.threadpool.start(worker)
+
+        self.rgbEditWindow.timerCallback = onTimerReset
+        self.rgbEditWindow.resetTimer()  # needed because we changed timerCallback
+
     def home(self):
         # btn = QPushButton('Quit', self)
         # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
@@ -183,6 +222,11 @@ class CoolWindow(QMainWindow):
                                  self)
         binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
+        # Toolbar Label for RGB Edit
+        rgbEditAction = QAction(QtGui.QIcon('rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
+                                 self)
+        rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+
         # Toolbar definition
         self.toolBar = QToolBar('Edit Options')
         self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
@@ -193,6 +237,7 @@ class CoolWindow(QMainWindow):
         self.toolBar.addSeparator()
         self.toolBar.addAction(grayAction)
         self.toolBar.addAction(binarizeAction)
+        self.toolBar.addAction(rgbEditAction)
 
         self.show()
 
