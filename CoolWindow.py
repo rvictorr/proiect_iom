@@ -1,9 +1,9 @@
-from multiprocessing.pool import ThreadPool
-from threading import Timer
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QThreadPool
 import ImageUtils
+from Worker import Worker
 from BinarizationWindow import BinarizationWindow
 from AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
@@ -13,7 +13,9 @@ class CoolWindow(QMainWindow):
     def __init__(self):
         super(CoolWindow, self).__init__()
 
-        self.pool = ThreadPool(processes=1)
+        self.threadpool = QThreadPool()
+        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+
         self.orig_image = None
         self.processed_image = None
 
@@ -58,12 +60,10 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
 
-
         # Label for editMenu object Grayscale
         self.binarizeAction = QAction('&Binarize', self)
         self.binarizeAction.setShortcut('Ctrl+B')
         self.binarizeAction.setStatusTip('Binarize currently selected image using selected thresholds.')
-        # TODO: replace w/ compute and display binarize function call
         self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
 
         # Label for helpMenu object About
@@ -103,12 +103,19 @@ class CoolWindow(QMainWindow):
             QMessageBox.critical(self, 'Error', 'You\'re an idiot')
             return
 
-        def thread_func():
-            self.processed_image = ImageUtils.rgb2grayscale(self.orig_image)
+        def thread_func(progress_callback, img):
+            return ImageUtils.rgb2grayscale(img)
             # TODO: fix bug with opening files from desktop
-            self.update_after_image()
 
-        self.pool.apply_async(thread_func)
+        def result_func(result):
+            self.processed_image = result
+            # self.processed_image.swap(result)  # FIXME this crashes in the same way
+
+        worker = Worker(thread_func, img=self.orig_image)
+        worker.signals.result.connect(result_func)
+        worker.signals.finished.connect(self.update_after_image)
+
+        self.threadpool.start(worker)
 
     def binarize_clicked(self, pos):
         if self.orig_image is None:
@@ -119,23 +126,54 @@ class CoolWindow(QMainWindow):
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
 
-        def thread_func():
-            def onUpdate():
-                print('binarization onUpdate called')
-                thr1, thr2 = self.binarizationWindow.getSliderValues()
-                self.processed_image = ImageUtils.binarize(self.orig_image, thr1, thr2)
-                self.update_after_image()
+        def onTimerReset():
+            def thread_func(progress_callback, img, sliderValues):
+                print('Binarizing')
+                # return ImageUtils.binarize(img, sliderValues[0], sliderValues[1])
+                self.processed_image = ImageUtils.binarize(img, sliderValues[0], sliderValues[1])
 
-            self.binarizationWindow.timerCallback = onUpdate
-            self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
+            def result_func(result):  # for some reason this doesn't get called
+                print('Result came')
+                self.processed_image = result
 
-        self.pool.apply_async(thread_func)
+            worker = Worker(thread_func, img=self.orig_image, sliderValues=self.binarizationWindow.getSliderValues())
+            worker.signals.result.connect(result_func)
+            worker.signals.finished.connect(self.update_after_image)
+
+            self.threadpool.start(worker)
+
+        self.binarizationWindow.timerCallback = onTimerReset
+        self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
+
+
+        # def thread_func(progress_callback, img, binWindow):
+        #     #  TODO: maybe figure out a way to remove the timer stuff from here
+        #     def onUpdate():
+        #         print('binarization onUpdate called')
+        #         thr1, thr2 = binWindow.getSliderValues()
+        #         self.processed_image = ImageUtils.binarize(img, thr1, thr2)
+        #         # self.processed_image = ImageUtils.rgb2grayscale(img)
+        #         self.update_after_image()
+        #
+        #     self.binarizationWindow.timerCallback = onUpdate
+        #     self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
+        #
+        # worker = Worker(thread_func, img=self.orig_image, binWindow=self.binarizationWindow)
+        # # worker.signals.finished.connect(self.update_after_image)
+        #
+        # self.threadpool.start(worker)
 
     def home(self):
         # btn = QPushButton('Quit', self)
         # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         # btn.setGeometry(860, 440, 60, 40)
 
+        #  TODO: add icons for open and save
+        openAction = QAction('Open', self)
+        openAction.triggered.connect(self.file_open_clicked)
+
+        saveAction = QAction('Save', self)
+        saveAction.triggered.connect(self.file_save_clicked)
         # Toolbar Label for Grayscale
         grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
         grayAction.triggered.connect(self.grayscale_clicked)
@@ -149,6 +187,10 @@ class CoolWindow(QMainWindow):
         self.toolBar = QToolBar('Edit Options')
         self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
+
+        self.toolBar.addAction(openAction)
+        self.toolBar.addAction(saveAction)
+        self.toolBar.addSeparator()
         self.toolBar.addAction(grayAction)
         self.toolBar.addAction(binarizeAction)
 
@@ -160,8 +202,8 @@ class CoolWindow(QMainWindow):
             event.ignore()
             return
 
-        self.pool.close()
-        self.pool.join()
+        self.threadpool.waitForDone(1000)
+        self.threadpool.clear()
         event.accept()
 
     def show_close_program_prompt(self):
@@ -183,22 +225,24 @@ class CoolWindow(QMainWindow):
         if not filePath:
             return
 
-        def thread_func():  # really janky code but it works if you're careful with it (we should use locks n shit)
-            if self.orig_image is None:
-                self.orig_image = QImage()
-                self.processed_image = QImage()
+        if self.orig_image is None:
+            self.orig_image = QImage()
+            self.processed_image = QImage()
 
+        def thread_func(progress_callback):
             self.orig_image.load(filePath)
             self.processed_image.load(filePath)
+            print('Finished opening image')
 
+        def finished_func():
             self.update_before_image()
             self.update_after_image()
 
-            self.beforeImgLabel.update()
-            self.afterImgLabel.update()
-            print('Finished opening image')
+        worker = Worker(thread_func)
+        worker.signals.finished.connect(finished_func)
 
-        self.pool.apply_async(thread_func)
+        self.threadpool.start(worker)
+
 
     def file_save_clicked(self):
         if self.processed_image is None:
@@ -213,11 +257,13 @@ class CoolWindow(QMainWindow):
         if not filePath:
             return
 
-        def thread_func():
+        def thread_func(progress_callback):
             self.processed_image.save(filePath)
             print('Finished saving image')
 
-        self.pool.apply_async(thread_func)
+        worker = Worker(thread_func)
+
+        self.threadpool.start(worker)
 
     def update_before_image(self):
         self.beforeImgPixMap.convertFromImage(self.orig_image)
@@ -225,6 +271,9 @@ class CoolWindow(QMainWindow):
         self.beforeImgLabel.update()
 
     def update_after_image(self):
-        self.afterImgPixMap.convertFromImage(self.processed_image)
+        self.afterImgPixMap.convertFromImage(self.processed_image)  # FIXME crashes here when opening files from desktop
+        # self.afterImgPixMap.convertFromImage(self.orig_image)
+        # crashes only with processed_image
+
         self.afterImgLabel.setPixmap(self.afterImgPixMap)
         self.afterImgLabel.update()
