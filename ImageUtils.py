@@ -1,7 +1,4 @@
-import pprint
-
 from PyQt5.QtGui import QImage
-from PyQt5 import QtGui
 import numpy as np
 
 
@@ -24,7 +21,8 @@ def rgb2grayscale(img: QImage):
     mat = [0.2989, 0.5870, 0.1140, 0] if bytesPerPixel == 4 else [0.2989, 0.5870, 0.1140]  # np.dot breaks everything
     # print(arr)
     # print(arr.shape)
-    grayArr = np.array(np.dot(arr, mat), dtype=np.uint8)
+    grayArr = np.array(np.dot(arr, mat), dtype=np.uint8)  # shit breaks only if you set dtype to uint8
+    # grayArr = np.array(0.299*arr[:,:,0]+0.587*arr[:,:,1]+0.114*arr[:,:,2]+1*arr[:,:,3], dtype=np.uint8)
     # grayArr1 = np.array(np.dot(arr, [1, 1, 1, 1]), dtype=np.uint8)
     # grayArr1 = np.zeros((arr.shape[0], arr.shape[1]), dtype=np.uint8)
     # grayArr2 = np.array(arr, dtype=np.uint8)
@@ -36,7 +34,7 @@ def rgb2grayscale(img: QImage):
     # print(grayArr2)
     # print(grayArr2.shape)
 
-    return QImage(grayArr, arr.shape[1], arr.shape[0], QImage.Format_Grayscale8)
+    return QImage(grayArr.data, arr.shape[1], arr.shape[0], QImage.Format_Grayscale8)
 
 
 def binarize(img: QImage, thr1, thr2):
@@ -50,10 +48,9 @@ def binarize(img: QImage, thr1, thr2):
     choicelist = [0, 85, 255]
     bin_arr1 = np.array(np.select(condlist, choicelist), dtype=np.uint8)
 
-    return QImage(bin_arr1, bin_arr1.shape[1], bin_arr1.shape[0], QImage.Format_Grayscale8)
+    return QImage(bin_arr1.data, bin_arr1.shape[1], bin_arr1.shape[0], QImage.Format_Grayscale8)
 
 def rgbEdit(img: QImage, rVal, gVal, bVal):
-    # TODO : Logic is broken, contorl works tho
     ptr = img.bits()
     ptr.setsize(img.byteCount())
     bytesPerPixel = img.byteCount()//(img.width()*img.height())
@@ -67,4 +64,4 @@ def rgbEdit(img: QImage, rVal, gVal, bVal):
     arr[arr > 255] = 255
     arr = np.array(arr, dtype=np.uint8)
 
-    return QImage(arr, arr.shape[1], arr.shape[0], QImage.Format_ARGB32)
+    return QImage(arr.data, arr.shape[1], arr.shape[0], QImage.Format_ARGB32)
