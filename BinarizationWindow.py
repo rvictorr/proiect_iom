@@ -34,6 +34,10 @@ class BinarizationWindow(QWidget):
         self.layout().addWidget(self.sliders)
         self.layout().addWidget(self.checkBox)
 
+    def reset(self):
+        self.textSlider1.reset()
+        self.textSlider2.reset()
+
     def checkBoxStateChanged(self, state):
         if state == QtCore.Qt.Checked:
             def slider1ValueChangedCallback(value):

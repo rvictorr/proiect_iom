@@ -38,6 +38,11 @@ class RgbEditWindow(QWidget):
         self.layout().addWidget(self.gSlider)
         self.layout().addWidget(self.bSlider)
 
+    def reset(self):
+        self.rSlider.reset()
+        self.gSlider.reset()
+        self.bSlider.reset()
+
     def timerCallback(self):
         pass
 

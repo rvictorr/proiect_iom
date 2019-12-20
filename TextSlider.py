@@ -7,7 +7,8 @@ class TextSlider(QWidget):
     def __init__(self, parent, labelText='', min=0, max=99, defaultValue=0):
         super().__init__(parent)
 
-        self.sliderValue = defaultValue
+        self.defaultValue = defaultValue
+        self.sliderValue = self.defaultValue
         self.onSliderValueChanged = lambda value: value
 
         self.setLayout(QVBoxLayout(self))
@@ -20,7 +21,7 @@ class TextSlider(QWidget):
 
         self.sliderText = QSpinBox(self)
         self.sliderText.setRange(min, max)
-        self.sliderText.setValue(defaultValue)
+        self.reset()
 
         self.slider.valueChanged.connect(self.sliderChangeValue)
         self.sliderText.valueChanged.connect(self.sliderTextValueChanged)
@@ -31,6 +32,9 @@ class TextSlider(QWidget):
 
     def value(self):
         return self.slider.value()
+
+    def reset(self):
+        self.sliderText.setValue(self.defaultValue)
 
     def setSliderPosition(self, pos):
         self.slider.setSliderPosition(pos)

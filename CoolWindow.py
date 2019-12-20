@@ -293,6 +293,8 @@ class CoolWindow(QMainWindow):
             self.grayScaleAction.setEnabled(True)
             self.binarizeAction.setEnabled(True)
             self.rgbEditAction.setEnabled(True)
+            self.binarizationWindow.reset()
+            self.rgbEditWindow.reset()
 
         worker = Worker(thread_func)
         worker.signals.finished.connect(finished_func)
