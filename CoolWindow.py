@@ -38,7 +38,7 @@ class CoolWindow(QMainWindow):
             QtCore.QSize(self.width, self.height),
             QApplication.desktop().screenGeometry()
         ))
-        self.setWindowTitle('GIE Pro v0.9 (Ghetto Image Editor)')
+        self.setWindowTitle('GIE Pro v1.0 (Ghetto Image Editor)')
         self.setWindowIcon(QIcon('icons/ico_logo.png'))
 
         # Label for fileMenu object Open
@@ -181,6 +181,7 @@ class CoolWindow(QMainWindow):
 
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
+        self.binarizationWindow.activateWindow()
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
@@ -225,6 +226,7 @@ class CoolWindow(QMainWindow):
 
         self.rgbEditWindow.move(pos)
         self.rgbEditWindow.show()
+        self.rgbEditWindow.activateWindow()
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
@@ -255,7 +257,7 @@ class CoolWindow(QMainWindow):
 
     def show_close_program_prompt(self):
         choice = QMessageBox.question(self, 'Quit Program?',
-                                      'Are you sure you want to close the program? Unsaved changes may be lost.',
+                                      'Are you sure you want to close the program? Unsaved changes will be lost.',
                                       QMessageBox.Yes | QMessageBox.No)
         if choice == QMessageBox.Yes:
             print('Closing program.')
@@ -264,7 +266,7 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', '\n\n        Ghetto Image Editor v.0.8'
+        QMessageBox.information(self, 'About', '\n\n        Ghetto Image Editor v1.0'
                                                ' \n\n\nGhetto Image Editor was developed as a homework project by Rusu Victor, '
                                                'Deleanu Radu and Iovescu Daniel.\n\nThe current distributin of the program supports image'
                                                ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
@@ -282,7 +284,7 @@ class CoolWindow(QMainWindow):
         def thread_func(progress_callback):
             self.orig_image.load(filePath)
             self.processed_image.load(filePath)
-            print('Finished opening image')
+            print('Finished opening image {}'.format(filePath))
 
         def finished_func():
             self.update_before_image()
@@ -317,7 +319,7 @@ class CoolWindow(QMainWindow):
 
         def thread_func(progress_callback):
             self.processed_image.save(filePath)
-            print('Finished saving image')
+            print('Finished saving image {}'.format(filePath))
 
         worker = Worker(thread_func)
 

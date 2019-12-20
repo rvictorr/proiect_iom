@@ -22,7 +22,7 @@ class BinarizationWindow(QWidget):
 
         self.textSlider1 = TextSlider(self, 'Threshold 1', 0, 255, 127)
 
-        self.textSlider2 = TextSlider(self, 'Threshold 1', 0, 255, 127)
+        self.textSlider2 = TextSlider(self, 'Threshold 2', 0, 255, 127)
 
         self.sliders.layout().addWidget(self.textSlider1)
         self.sliders.layout().addWidget(self.textSlider2)
@@ -37,7 +37,7 @@ class BinarizationWindow(QWidget):
     def reset(self):
         self.textSlider1.reset()
         self.textSlider2.reset()
-
+        self.checkBox.setChecked(False)
     def checkBoxStateChanged(self, state):
         if state == QtCore.Qt.Checked:
             def slider1ValueChangedCallback(value):
