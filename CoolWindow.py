@@ -119,11 +119,10 @@ class CoolWindow(QMainWindow):
 
         def thread_func(progress_callback, img):
             return ImageUtils.rgb2grayscale(img)
-            # TODO: fix bug with opening files from desktop
 
         def result_func(result):
             self.processed_image = result
-            # self.processed_image.swap(result)  # FIXME this crashes in the same way
+            # self.processed_image.swap(result)  # TODO this crashes for some reason
 
         worker = Worker(thread_func, img=self.orig_image)
         worker.signals.result.connect(result_func)
@@ -142,16 +141,15 @@ class CoolWindow(QMainWindow):
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
-                print('Binarizing')
+                # print('Binarizing')
                 # return ImageUtils.binarize(img, sliderValues[0], sliderValues[1])
                 self.processed_image = ImageUtils.binarize(img, sliderValues[0], sliderValues[1])
 
             def result_func(result):  # for some reason this doesn't get called
-                print('Result came')
                 self.processed_image = result
 
             worker = Worker(thread_func, img=self.orig_image, sliderValues=self.binarizationWindow.getSliderValues())
-            worker.signals.result.connect(result_func)
+            # worker.signals.result.connect(result_func)
             worker.signals.finished.connect(self.update_after_image)
 
             self.threadpool.start(worker)
@@ -188,16 +186,14 @@ class CoolWindow(QMainWindow):
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
-                print('sliderValues:{}'.format(sliderValues))
                 rVal, gVal, bVal = sliderValues
                 self.processed_image = ImageUtils.rgbEdit(img, rVal, gVal, bVal)
 
             def result_func(result):  # for some reason this doesn't get called
-                print('Result came')
                 self.processed_image = result
 
             worker = Worker(thread_func, img=self.orig_image, sliderValues=self.rgbEditWindow.getSliderValues())
-            worker.signals.result.connect(result_func)
+            # worker.signals.result.connect(result_func)
             worker.signals.finished.connect(self.update_after_image)
 
             self.threadpool.start(worker)
@@ -330,9 +326,6 @@ class CoolWindow(QMainWindow):
         self.beforeImgLabel.update()
 
     def update_after_image(self):
-        self.afterImgPixMap.convertFromImage(self.processed_image)  # FIXME crashes here when opening files from desktop
-        # self.afterImgPixMap.convertFromImage(self.orig_image)
-        # crashes only with processed_image
-
+        self.afterImgPixMap.convertFromImage(self.processed_image)
         self.afterImgLabel.setPixmap(self.afterImgPixMap)
         self.afterImgLabel.update()
