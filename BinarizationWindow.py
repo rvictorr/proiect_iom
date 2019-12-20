@@ -20,11 +20,9 @@ class BinarizationWindow(QWidget):
         self.sliders = QWidget(self)
         self.sliders.setLayout(QHBoxLayout(self))
 
-        self.textSlider1 = TextSlider(self, 0, 255, 127)
-        self.textSlider1.setLabelText('Threshold 1')
+        self.textSlider1 = TextSlider(self, 'Threshold 1', 0, 255, 127)
 
-        self.textSlider2 = TextSlider(self, 0, 255, 127)
-        self.textSlider2.setLabelText('Threshold 2')
+        self.textSlider2 = TextSlider(self, 'Threshold 1', 0, 255, 127)
 
         self.sliders.layout().addWidget(self.textSlider1)
         self.sliders.layout().addWidget(self.textSlider2)

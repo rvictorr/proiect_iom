@@ -38,7 +38,7 @@ class CoolWindow(QMainWindow):
             QtCore.QSize(self.width, self.height),
             QApplication.desktop().screenGeometry()
         ))
-        self.setWindowTitle('GIE Pro v0.8 (Ghetto Image Editor)')
+        self.setWindowTitle('GIE Pro v0.9 (Ghetto Image Editor)')
         self.setWindowIcon(QIcon('icons/ico_logo.png'))
 
         # Label for fileMenu object Open

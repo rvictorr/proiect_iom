@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 
 class TextSlider(QWidget):
 
-    def __init__(self, parent, min=0, max=99, defaultValue=0):
+    def __init__(self, parent, labelText='', min=0, max=99, defaultValue=0):
         super().__init__(parent)
 
         self.sliderValue = defaultValue
@@ -16,6 +16,7 @@ class TextSlider(QWidget):
         self.slider.setRange(min, max)
 
         self.label = QLabel(self)
+        self.label.setText(labelText)
 
         self.sliderText = QSpinBox(self)
         self.sliderText.setRange(min, max)
@@ -49,14 +50,6 @@ class TextSlider(QWidget):
 
         self.sliderText.setValue(self.sliderValue)
         # print('New {} slider value:{}'.format(self.label.text(), self.slider.value()))
-
-    def setSliderTextWidth(self):
-        fm = self.sliderText.fontMetrics()
-        w = fm.boundingRect('999').width()
-        self.sliderText.setFixedWidth(w+8)  # +8 for horizontal margins
-
-    def setLabelText(self, text):
-        self.label.setText(text)
 
     def setRange(self, min, max):
         self.slider.setRange(min, max)
