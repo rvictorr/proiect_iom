@@ -39,7 +39,7 @@ class CoolWindow(QMainWindow):
             QApplication.desktop().screenGeometry()
         ))
         self.setWindowTitle('GIE Pro v0.8 (Ghetto Image Editor)')
-        self.setWindowIcon(QIcon('logo.png'))
+        self.setWindowIcon(QIcon('icons/ico_logo.png'))
 
         # Label for fileMenu object Open
         self.openAction = QAction('&Open File', self)
@@ -219,18 +219,18 @@ class CoolWindow(QMainWindow):
         saveAction.setEnabled(False)
 
         # Toolbar Label for Grayscale
-        grayAction = QAction(QtGui.QIcon('grayscale.png'), 'Convert currently selected image to grayscale.', self)
+        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'), 'Convert currently selected image to grayscale.', self)
         grayAction.triggered.connect(self.grayscale_clicked)
         grayAction.setEnabled(False)
 
         # Toolbar Label for Binarize
-        binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.',
+        binarizeAction = QAction(QtGui.QIcon('icons/ico_binarize.png'), 'Convert currently selected image to binarized image.',
                                  self)
         binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
         binarizeAction.setEnabled(False)
 
         # Toolbar Label for RGB Edit
-        rgbEditAction = QAction(QtGui.QIcon('rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
+        rgbEditAction = QAction(QtGui.QIcon('icons/ico_rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
                                  self)
         rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
         rgbEditAction.setEnabled(False)
