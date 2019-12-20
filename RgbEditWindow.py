@@ -1,7 +1,7 @@
 from threading import Timer
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import *
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
+from TextSlider import TextSlider
 
 
 class RgbEditWindow(QWidget):
@@ -13,94 +13,36 @@ class RgbEditWindow(QWidget):
         self.setWindowFlags(QtCore.Qt.Tool)
         self.setWindowTitle(title)
 
-        self.rVal = 0
-        self.gVal = 0
-        self.bVal = 0
-
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
 
-        self.mainLayout = QHBoxLayout()
-        self.setLayout(self.mainLayout)
+        self.setLayout(QHBoxLayout())
 
-        self.rValSlider = QSlider()
-        self.gValSlider = QSlider()
-        self.bValSlider = QSlider()
+        def sliderValueChangedCallback(value):
+            if value > 255:
+                value = 255
+            if value < -255:
+                value = -255
+            self.resetTimer()
+            return value
 
-        self.rValSlider.valueChanged.connect(self.rValSliderChangeValue)
-        self.gValSlider.valueChanged.connect(self.gValSliderChangeValue)
-        self.bValSlider.valueChanged.connect(self.bValSliderChangeValue)
+        self.rSlider = TextSlider(self, 0)
+        self.rSlider.setLabelText('Red')
+        self.rSlider.setSliderLimits(-255, 255)
+        self.rSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
-        self.rValSlider.setMinimum(-255)
-        self.rValSlider.setMaximum(255)
+        self.gSlider = TextSlider(self, 0)
+        self.gSlider.setLabelText('Green')
+        self.gSlider.setSliderLimits(-255, 255)
+        self.gSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
-        self.gValSlider.setMinimum(-255)
-        self.gValSlider.setMaximum(255)
+        self.bSlider = TextSlider(self, 0)
+        self.bSlider.setLabelText('Blue')
+        self.bSlider.setSliderLimits(-255, 255)
+        self.bSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
-        self.bValSlider.setMinimum(-255)
-        self.bValSlider.setMaximum(255)
-
-        self.rValSliderLabel = QLabel(str(self.rVal))  # TODO make these QTextEdit instead of labels
-        self.gValSliderLabel = QLabel(str(self.gVal))
-        self.bValSliderLabel = QLabel(str(self.bVal))
-
-        self.leftColumn = QWidget()
-        self.leftColumn.setLayout(QVBoxLayout())
-        self.leftColumn.layout().addWidget(QLabel('Red'))
-        self.leftColumn.layout().addWidget(self.rValSlider)
-        self.leftColumn.layout().addWidget(self.rValSliderLabel)
-
-        self.middleColumn = QWidget()
-        self.middleColumn.setLayout(QVBoxLayout())
-        self.middleColumn.layout().addWidget(QLabel('Green'))
-        self.middleColumn.layout().addWidget(self.gValSlider)
-        self.middleColumn.layout().addWidget(self.gValSliderLabel)
-
-        self.rightColumn = QWidget()
-        self.rightColumn.setLayout(QVBoxLayout())
-        self.rightColumn.layout().addWidget(QLabel('Blue'))
-        self.rightColumn.layout().addWidget(self.bValSlider)
-        self.rightColumn.layout().addWidget(self.bValSliderLabel)
-
-        self.mainLayout.addWidget(self.leftColumn)
-        self.mainLayout.addWidget(self.middleColumn)
-        self.mainLayout.addWidget(self.rightColumn)
-
-    def showEvent(self, QShowEvent):
-        # reset sliders
-        print('rgb edit window visible')
-        self.rValSliderChangeValue(self.rVal, True)
-        self.gValSliderChangeValue(self.gVal, True)
-        self.bValSliderChangeValue(self.bVal, True)
-
-    def rValSliderChangeValue(self, value, force=False):
-        self.rVal = value
-
-        if force:
-            self.rValSlider.setSliderPosition(value)
-
-        self.rValSliderLabel.setText(str(self.rVal))
-        print('rVal new value:{}'.format(self.rVal))
-        self.resetTimer()
-
-    def gValSliderChangeValue(self, value, force=False):
-        self.gVal = value
-
-        if force:
-            self.gValSlider.setSliderPosition(value)
-
-        self.gValSliderLabel.setText(str(self.gVal))
-        print('gVal new value:{}'.format(self.gVal))
-        self.resetTimer()
-
-    def bValSliderChangeValue(self, value, force=False):
-        self.bVal = value
-
-        if force:
-            self.bValSlider.setSliderPosition(value)
-
-        self.bValSliderLabel.setText(str(self.bVal))
-        print('bVal new value:{}'.format(self.bVal))
-        self.resetTimer()
+        self.layout().addWidget(self.rSlider)
+        self.layout().addWidget(self.gSlider)
+        self.layout().addWidget(self.bSlider)
 
     def timerCallback(self):
         pass
@@ -112,4 +54,4 @@ class RgbEditWindow(QWidget):
         self.updateTimer.start()
 
     def getSliderValues(self):
-        return self.rVal, self.gVal, self.bVal
+        return self.rSlider.value(), self.gSlider.value(), self.bSlider.value()

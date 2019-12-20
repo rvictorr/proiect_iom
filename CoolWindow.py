@@ -1,5 +1,3 @@
-from multiprocessing.pool import ThreadPool
-from threading import Timer
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -190,6 +188,7 @@ class CoolWindow(QMainWindow):
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
+                print('sliderValues:{}'.format(sliderValues))
                 rVal, gVal, bVal = sliderValues
                 self.processed_image = ImageUtils.rgbEdit(img, rVal, gVal, bVal)
 

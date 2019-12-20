@@ -1,7 +1,7 @@
 from threading import Timer
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import *
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
+from TextSlider import TextSlider
 
 
 class BinarizationWindow(QWidget):
@@ -13,72 +13,38 @@ class BinarizationWindow(QWidget):
         self.setWindowFlags(QtCore.Qt.Tool)
         self.setWindowTitle(title)
 
-        self.thr1 = 127
-        self.thr2 = 127
-
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
 
-        self.mainLayout = QHBoxLayout()
-        self.setLayout(self.mainLayout)
-        self.thr1Slider = QSlider()
-        self.thr2Slider = QSlider()
-        self.thr1Slider.valueChanged.connect(self.thr1SliderChangeValue)
-        self.thr2Slider.valueChanged.connect(self.thr2SliderChangeValue)
-        self.thr1Slider.setMinimum(0)
-        self.thr1Slider.setMaximum(255)
-        self.thr2Slider.setMinimum(0)
-        self.thr2Slider.setMaximum(255)
+        self.setLayout(QHBoxLayout())
 
-        self.thr1SliderLabel = QLabel(str(self.thr1))
-        self.thr2SliderLabel = QLabel(str(self.thr2))
+        self.textSlider1 = TextSlider(self, 127)
+        self.textSlider1.setLabelText('Threshold 1')
+        self.textSlider1.setSliderLimits(0, 255)
 
-        self.leftColumn = QWidget()
-        self.leftColumn.setLayout(QVBoxLayout())
-        self.leftColumn.layout().addWidget(QLabel('Threshold 1'))
-        self.leftColumn.layout().addWidget(self.thr1Slider)
-        self.leftColumn.layout().addWidget(self.thr1SliderLabel)
+        def slider1ValueChangedCallback(value):
+            if value > self.textSlider2.value():
+                # value = self.textSlider1.value()
+                self.textSlider2.setSliderPosition(value)
+            self.resetTimer()
+            return value
 
-        self.rightColumn = QWidget()
-        self.rightColumn.setLayout(QVBoxLayout())
-        self.rightColumn.layout().addWidget(QLabel('Threshold 2'))
-        self.rightColumn.layout().addWidget(self.thr2Slider)
-        self.rightColumn.layout().addWidget(self.thr2SliderLabel)
+        self.textSlider1.setSliderValueChangedCallback(slider1ValueChangedCallback)
 
-        self.mainLayout.addWidget(self.leftColumn)
-        self.mainLayout.addWidget(self.rightColumn)
+        self.textSlider2 = TextSlider(self, 127)
+        self.textSlider2.setLabelText('Threshold 2')
+        self.textSlider2.setSliderLimits(0, 255)
 
-    def showEvent(self, QShowEvent):
-        # reset sliders
-        print('binarization window visible')
-        self.thr1SliderChangeValue(self.thr1, True)
-        self.thr2SliderChangeValue(self.thr2, True)
+        def slider2ValueChangedCallback(value):
+            if value < self.textSlider1.value():
+                value = self.textSlider1.value()
+                self.textSlider2.setSliderPosition(value)
+            self.resetTimer()
+            return value
 
-    def thr1SliderChangeValue(self, value, force=False):
-        self.thr1 = value
+        self.textSlider2.setSliderValueChangedCallback(slider2ValueChangedCallback)
 
-        if value > self.thr2Slider.value():
-            self.thr2Slider.setSliderPosition(self.thr1)
-
-        if force:
-            self.thr1Slider.setSliderPosition(value)
-
-        self.thr1SliderLabel.setText(str(self.thr1))
-        print('thr1 new value:{}'.format(self.thr1))
-        self.resetTimer()
-
-    def thr2SliderChangeValue(self, value, force=False):
-        self.thr2 = value
-
-        if value < self.thr1Slider.value():
-            self.thr2Slider.setSliderPosition(self.thr1)
-            self.thr2 = self.thr1
-
-        if force:
-            self.thr2Slider.setSliderPosition(value)
-
-        self.thr2SliderLabel.setText(str(self.thr2))
-        print('thr2 new value:{}'.format(self.thr2))
-        self.resetTimer()
+        self.layout().addWidget(self.textSlider1)
+        self.layout().addWidget(self.textSlider2)
 
     def timerCallback(self):
         pass
@@ -90,4 +56,4 @@ class BinarizationWindow(QWidget):
         self.updateTimer.start()
 
     def getSliderValues(self):
-        return self.thr1, self.thr2
+        return self.textSlider1.value(), self.textSlider2.value()
