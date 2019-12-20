@@ -38,8 +38,8 @@ class CoolWindow(QMainWindow):
             QtCore.QSize(self.width, self.height),
             QApplication.desktop().screenGeometry()
         ))
-        self.setWindowTitle('GIE Pro v0.5 (Ghetto Image Editor)')
-        self.setWindowIcon(QIcon('logo.jpg'))
+        self.setWindowTitle('GIE Pro v0.8 (Ghetto Image Editor)')
+        self.setWindowIcon(QIcon('logo.png'))
 
         # Label for fileMenu object Open
         self.openAction = QAction('&Open File', self)
@@ -85,7 +85,6 @@ class CoolWindow(QMainWindow):
         self.helpAction = QAction('&About', self)
         self.helpAction.setShortcut('Ctrl+H')
         self.helpAction.setStatusTip('Show information about the program.')
-        # replace w/ display About pop-up function call
         self.helpAction.triggered.connect(self.help_about_clicked)
 
         self.statusBar = self.statusBar()
@@ -220,7 +219,7 @@ class CoolWindow(QMainWindow):
         saveAction.setEnabled(False)
 
         # Toolbar Label for Grayscale
-        grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
+        grayAction = QAction(QtGui.QIcon('grayscale.png'), 'Convert currently selected image to grayscale.', self)
         grayAction.triggered.connect(self.grayscale_clicked)
         grayAction.setEnabled(False)
 
@@ -271,7 +270,10 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', 'String cu despre program si plm.')
+        QMessageBox.information(self, 'About', '        Ghetto Image Editor v.0.8'
+                                               ' \n\n\n Getto Image Editor was developed as a homework project by Rusu Victor, '
+                                               'Deleanu Radu and Iovescu Daniel.\n\n The current distributin of the program supports image'
+                                               ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):
         filePath, selectedFilter = QFileDialog.getOpenFileName(self, 'Open Image', '',
