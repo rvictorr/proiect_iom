@@ -48,7 +48,7 @@ class RgbEditWindow(QWidget):
         pass
 
     def resetTimer(self):
-        print('resetTimer called')
+        # print('resetTimer called')
         self.updateTimer.cancel()
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
         self.updateTimer.start()

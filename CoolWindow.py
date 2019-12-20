@@ -20,6 +20,8 @@ class CoolWindow(QMainWindow):
         self.orig_image = None
         self.processed_image = None
 
+        self.toolBar = None
+
         self.beforeImgPixMap = QPixmap()
         self.beforeImgLabel = AspectRatioPixmapLabel()
         self.afterImgPixMap = QPixmap()
@@ -109,7 +111,50 @@ class CoolWindow(QMainWindow):
         self.centralWidget().addWidget(self.beforeImgLabel)
         self.centralWidget().addWidget(self.afterImgLabel)
 
-        self.home()
+        self.setupToolbar()
+
+    def setupToolbar(self):
+        # btn = QPushButton('Quit', self)
+        # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+        # btn.setGeometry(860, 440, 60, 40)
+
+        openAction = QAction(QtGui.QIcon('icons/ico_open.png'), 'Open', self)
+        openAction.triggered.connect(self.file_open_clicked)
+
+        saveAction = QAction(QtGui.QIcon('icons/ico_save.png'), 'Save', self)
+        saveAction.triggered.connect(self.file_save_clicked)
+        saveAction.setEnabled(False)
+
+        # Toolbar Label for Grayscale
+        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'), 'Convert currently selected image to grayscale.', self)
+        grayAction.triggered.connect(self.grayscale_clicked)
+        grayAction.setEnabled(False)
+
+        # Toolbar Label for Binarize
+        binarizeAction = QAction(QtGui.QIcon('icons/ico_binarize.png'),
+                                 'Convert currently selected image to binarized image.',
+                                 self)
+        binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
+        binarizeAction.setEnabled(False)
+
+        # Toolbar Label for RGB Edit
+        rgbEditAction = QAction(QtGui.QIcon('icons/ico_rgbEdit.png'),
+                                'Edit the RGB values of the currently selected image.',
+                                self)
+        rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+        rgbEditAction.setEnabled(False)
+
+        # Toolbar definition
+        self.toolBar = QToolBar('Edit Options')
+        self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
+        self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
+
+        self.toolBar.addAction(openAction)
+        self.toolBar.addAction(saveAction)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(grayAction)
+        self.toolBar.addAction(binarizeAction)
+        self.toolBar.addAction(rgbEditAction)
 
     def grayscale_clicked(self):
         if self.orig_image is None:
@@ -134,7 +179,6 @@ class CoolWindow(QMainWindow):
             QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
-        print('binarization click pos: {}'.format(pos))
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
 
@@ -179,7 +223,6 @@ class CoolWindow(QMainWindow):
             QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
-        print('rgbEdit click pos: {}'.format(pos))
         self.rgbEditWindow.move(pos)
         self.rgbEditWindow.show()
 
@@ -200,52 +243,8 @@ class CoolWindow(QMainWindow):
         self.rgbEditWindow.timerCallback = onTimerReset
         self.rgbEditWindow.resetTimer()  # needed because we changed timerCallback
 
-    def home(self):
-        # btn = QPushButton('Quit', self)
-        # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        # btn.setGeometry(860, 440, 60, 40)
-
-        #  TODO: add icons for open and save
-        openAction = QAction('Open', self)
-        openAction.triggered.connect(self.file_open_clicked)
-
-        saveAction = QAction('Save', self)
-        saveAction.triggered.connect(self.file_save_clicked)
-        saveAction.setEnabled(False)
-
-        # Toolbar Label for Grayscale
-        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'), 'Convert currently selected image to grayscale.', self)
-        grayAction.triggered.connect(self.grayscale_clicked)
-        grayAction.setEnabled(False)
-
-        # Toolbar Label for Binarize
-        binarizeAction = QAction(QtGui.QIcon('icons/ico_binarize.png'), 'Convert currently selected image to binarized image.',
-                                 self)
-        binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
-        binarizeAction.setEnabled(False)
-
-        # Toolbar Label for RGB Edit
-        rgbEditAction = QAction(QtGui.QIcon('icons/ico_rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
-                                 self)
-        rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
-        rgbEditAction.setEnabled(False)
-
-        # Toolbar definition
-        self.toolBar = QToolBar('Edit Options')
-        self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
-        self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
-
-        self.toolBar.addAction(openAction)
-        self.toolBar.addAction(saveAction)
-        self.toolBar.addSeparator()
-        self.toolBar.addAction(grayAction)
-        self.toolBar.addAction(binarizeAction)
-        self.toolBar.addAction(rgbEditAction)
-
-        self.show()
-
     def closeEvent(self, event):
-        print('close event')
+        # print('close event')
         if not self.show_close_program_prompt():
             event.ignore()
             return
@@ -265,9 +264,9 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', '        Ghetto Image Editor v.0.8'
-                                               ' \n\n\n Getto Image Editor was developed as a homework project by Rusu Victor, '
-                                               'Deleanu Radu and Iovescu Daniel.\n\n The current distributin of the program supports image'
+        QMessageBox.information(self, 'About', '\n\n        Ghetto Image Editor v.0.8'
+                                               ' \n\n\nGhetto Image Editor was developed as a homework project by Rusu Victor, '
+                                               'Deleanu Radu and Iovescu Daniel.\n\nThe current distributin of the program supports image'
                                                ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):

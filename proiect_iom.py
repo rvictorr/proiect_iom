@@ -5,7 +5,8 @@ from CoolWindow import CoolWindow
 # Function to run App
 def run():
     app = QApplication([])
-    GUI = CoolWindow()
+    mainWindow = CoolWindow()
+    mainWindow.show()
     app.exec()
 
 

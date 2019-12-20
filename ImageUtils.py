@@ -23,7 +23,6 @@ def rgb2grayscale(img: QImage):
 
         for index, line in enumerate(imgArray):
             line = line[:img.width() * 3].reshape(img.width(), 3)
-            print(line)
             grayArr[index] = np.dot(line, mat)
     else:
         imgArray = imgArray.reshape((img.height(), img.width(), 3))
@@ -57,8 +56,6 @@ def rgbEdit(img: QImage, rVal, gVal, bVal):
 
     if realByteCount != calculatedByteCount:
         slowPath = True
-
-    slowPath = True
 
     ptr.setsize(realByteCount)
 

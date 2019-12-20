@@ -48,7 +48,7 @@ class TextSlider(QWidget):
             self.slider.setSliderPosition(value)
 
         self.sliderText.setText(str(self.sliderValue))
-        print('New {} slider value:{}'.format(self.label.text(), self.slider.value()))
+        # print('New {} slider value:{}'.format(self.label.text(), self.slider.value()))
 
     def setSliderTextWidth(self):
         fm = self.sliderText.fontMetrics()
