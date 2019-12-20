@@ -41,9 +41,10 @@ def binarize(img: QImage, thr1, thr2):
     img = rgb2grayscale(img)  # convert it to grayscale first, we don't need RGB
 
     ptr = img.bits()
-    ptr.setsize(img.byteCount())
-    bytesPerPixel = img.byteCount() // (img.width() * img.height())
-    arr = np.asarray(ptr, dtype=np.uint8).reshape((img.height(), img.width(), bytesPerPixel))
+    byteCount = img.bytesPerLine() * img.height()
+    ptr.setsize(byteCount)
+    bytesPerPixel = byteCount//(img.width()*img.height())
+    arr = np.asarray(ptr, dtype=np.uint8).reshape((img.height(), img.bytesPerLine()//bytesPerPixel, bytesPerPixel))
     condlist = [(arr < thr1), np.logical_and(arr > thr1, arr < thr2), (arr > thr2)]
     choicelist = [0, 85, 255]
     bin_arr1 = np.array(np.select(condlist, choicelist), dtype=np.uint8)
@@ -52,10 +53,11 @@ def binarize(img: QImage, thr1, thr2):
 
 def rgbEdit(img: QImage, rVal, gVal, bVal):
     ptr = img.bits()
-    ptr.setsize(img.byteCount())
-    bytesPerPixel = img.byteCount()//(img.width()*img.height())
+    byteCount = img.bytesPerLine() * img.height()
+    ptr.setsize(byteCount)
+    bytesPerPixel = byteCount // (img.width() * img.height())
 
-    arr = np.asarray(ptr, dtype=np.int32).reshape((img.height(), img.width(), bytesPerPixel))
+    arr = np.asarray(ptr, dtype=np.int32).reshape((img.height(), img.bytesPerLine()//bytesPerPixel, bytesPerPixel))
     # add values to each channel
     arr[:, :, 2] += rVal
     arr[:, :, 1] += gVal

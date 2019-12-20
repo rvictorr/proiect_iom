@@ -52,6 +52,7 @@ class CoolWindow(QMainWindow):
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.setStatusTip('Save file to disk.')
         self.saveAction.triggered.connect(self.file_save_clicked)
+        self.saveAction.setEnabled(False)
 
         # Label for fileMenu object Exit
         self.exitAction = QAction('&Exit', self)
@@ -64,18 +65,21 @@ class CoolWindow(QMainWindow):
         self.grayScaleAction.setShortcut('Ctrl+G')
         self.grayScaleAction.setStatusTip('Convert currently selected image to grayscale.')
         self.grayScaleAction.triggered.connect(self.grayscale_clicked)
+        self.grayScaleAction.setEnabled(False)
 
         # Label for editMenu object Binarize
         self.binarizeAction = QAction('&Binarize', self)
         self.binarizeAction.setShortcut('Ctrl+B')
         self.binarizeAction.setStatusTip('Binarize currently selected image using selected thresholds.')
         self.binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
+        self.binarizeAction.setEnabled(False)
 
         # Label for editMenu object RGB Edit
         self.rgbEditAction = QAction('&RGB Edit', self)
         self.rgbEditAction.setShortcut('Ctrl+R')
         self.rgbEditAction.setStatusTip('Edit the RGB values of the current image.')
         self.rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+        self.rgbEditAction.setEnabled(False)
 
         # Label for helpMenu object About
         self.helpAction = QAction('&About', self)
@@ -112,7 +116,7 @@ class CoolWindow(QMainWindow):
 
     def grayscale_clicked(self):
         if self.orig_image is None:
-            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
         def thread_func(progress_callback, img):
@@ -131,7 +135,7 @@ class CoolWindow(QMainWindow):
 
     def binarize_clicked(self, pos):
         if self.orig_image is None:
-            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
         print('binarization click pos: {}'.format(pos))
@@ -177,7 +181,7 @@ class CoolWindow(QMainWindow):
 
     def rgbEdit_clicked(self, pos):
         if self.orig_image is None:
-            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
         print('rgbEdit click pos: {}'.format(pos))
@@ -213,19 +217,24 @@ class CoolWindow(QMainWindow):
 
         saveAction = QAction('Save', self)
         saveAction.triggered.connect(self.file_save_clicked)
+        saveAction.setEnabled(False)
+
         # Toolbar Label for Grayscale
         grayAction = QAction(QtGui.QIcon('grayscale.jpg'), 'Convert currently selected image to grayscale.', self)
         grayAction.triggered.connect(self.grayscale_clicked)
+        grayAction.setEnabled(False)
 
         # Toolbar Label for Binarize
         binarizeAction = QAction(QtGui.QIcon('binarize.png'), 'Convert currently selected image to binarized image.',
                                  self)
         binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
+        binarizeAction.setEnabled(False)
 
         # Toolbar Label for RGB Edit
         rgbEditAction = QAction(QtGui.QIcon('rgbEdit.png'), 'Edit the RGB values of the currently selected image.',
                                  self)
         rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
+        rgbEditAction.setEnabled(False)
 
         # Toolbar definition
         self.toolBar = QToolBar('Edit Options')
@@ -282,6 +291,12 @@ class CoolWindow(QMainWindow):
         def finished_func():
             self.update_before_image()
             self.update_after_image()
+            for action in self.toolBar.actions():
+                action.setEnabled(True)
+            self.saveAction.setEnabled(True)
+            self.grayScaleAction.setEnabled(True)
+            self.binarizeAction.setEnabled(True)
+            self.rgbEditAction.setEnabled(True)
 
         worker = Worker(thread_func)
         worker.signals.finished.connect(finished_func)
@@ -291,7 +306,7 @@ class CoolWindow(QMainWindow):
 
     def file_save_clicked(self):
         if self.processed_image is None:
-            QMessageBox.critical(self, 'Error', 'You\'re an idiot')
+            QMessageBox.critical(self, 'Error', 'Something unexpected happened')
             return
 
         filePath, selectedFilter = QFileDialog.getSaveFileName(self, 'Save File',
