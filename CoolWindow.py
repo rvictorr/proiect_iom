@@ -23,9 +23,9 @@ class CoolWindow(QMainWindow):
         self.toolBar = None
 
         self.beforeImgPixMap = QPixmap()
-        self.beforeImgLabel = AspectRatioPixmapLabel()
+        self.beforeImgLabel = AspectRatioPixmapLabel(self)
         self.afterImgPixMap = QPixmap()
-        self.afterImgLabel = AspectRatioPixmapLabel()
+        self.afterImgLabel = AspectRatioPixmapLabel(self)
 
         self.binarizationWindow = BinarizationWindow(self, 'Binarize')
         self.rgbEditWindow = RgbEditWindow(self, 'RGB Edit')
@@ -145,7 +145,7 @@ class CoolWindow(QMainWindow):
         rgbEditAction.setEnabled(False)
 
         # Toolbar definition
-        self.toolBar = QToolBar('Edit Options')
+        self.toolBar = QToolBar('Edit Options', self)
         self.toolBar.setOrientation(QtCore.Qt.Orientation.Vertical)
         self.addToolBar(QtCore.Qt.LeftToolBarArea, self.toolBar)
 

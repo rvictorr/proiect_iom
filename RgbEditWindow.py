@@ -15,7 +15,7 @@ class RgbEditWindow(QWidget):
 
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
 
-        self.setLayout(QHBoxLayout())
+        self.setLayout(QHBoxLayout(self))
 
         def sliderValueChangedCallback(value):
             if value > 255:
@@ -25,19 +25,16 @@ class RgbEditWindow(QWidget):
             self.resetTimer()
             return value
 
-        self.rSlider = TextSlider(self, 0)
+        self.rSlider = TextSlider(self, -255, 255, 0)
         self.rSlider.setLabelText('Red')
-        self.rSlider.setSliderLimits(-255, 255)
         self.rSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
-        self.gSlider = TextSlider(self, 0)
+        self.gSlider = TextSlider(self, -255, -255, 0)
         self.gSlider.setLabelText('Green')
-        self.gSlider.setSliderLimits(-255, 255)
         self.gSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
-        self.bSlider = TextSlider(self, 0)
+        self.bSlider = TextSlider(self, -255, -255, 0)
         self.bSlider.setLabelText('Blue')
-        self.bSlider.setSliderLimits(-255, 255)
         self.bSlider.setSliderValueChangedCallback(sliderValueChangedCallback)
 
         self.layout().addWidget(self.rSlider)
