@@ -255,6 +255,9 @@ class CoolWindow(QMainWindow):
         event.accept()
 
     def show_close_program_prompt(self):
+        if self.orig_image is None:
+            return True
+
         choice = QMessageBox.question(self, 'Quit Program?',
                                       'Are you sure you want to close the program? Unsaved changes will be lost.',
                                       QMessageBox.Yes | QMessageBox.No)
