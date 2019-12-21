@@ -268,7 +268,7 @@ class CoolWindow(QMainWindow):
     def help_about_clicked(self):
         QMessageBox.information(self, 'About', '\n\n        Ghetto Image Editor v1.0'
                                                ' \n\n\nGhetto Image Editor was developed as a homework project by Rusu Victor, '
-                                               'Deleanu Radu and Iovescu Daniel.\n\nThe current distributin of the program supports image'
+                                               'Deleanu Radu and Iovescu Daniel.\n\nThe current distribution of the program supports image'
                                                ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):
