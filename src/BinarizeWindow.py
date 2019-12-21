@@ -4,13 +4,12 @@ from PyQt5.QtWidgets import *
 from src.TextSlider import TextSlider
 
 
-class BinarizationWindow(QWidget):
+class BinarizeWindow(QWidget):
 
     timeOut = 250  # ms
 
     def __init__(self, parent, title):
-        super().__init__(parent)
-        self.setWindowFlags(QtCore.Qt.Tool)
+        super().__init__(parent, QtCore.Qt.Tool)
         self.setWindowTitle(title)
 
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)

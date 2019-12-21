@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThreadPool
 from src import ImageUtils
 from src.Worker import Worker
-from src.BinarizationWindow import BinarizationWindow
+from src.BinarizeWindow import BinarizeWindow
 from src.RgbEditWindow import RgbEditWindow
 from src.AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
@@ -12,7 +12,7 @@ from src.AspectRatioPixmapLabel import AspectRatioPixmapLabel
 class CoolWindow(QMainWindow):
 
     def __init__(self):
-        super(CoolWindow, self).__init__()
+        super(CoolWindow, self).__init__(flags=None)
 
         self.threadpool = QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
@@ -27,7 +27,7 @@ class CoolWindow(QMainWindow):
         self.afterImgPixMap = QPixmap()
         self.afterImgLabel = AspectRatioPixmapLabel(self)
 
-        self.binarizationWindow = BinarizationWindow(self, 'Binarize')
+        self.binarizationWindow = BinarizeWindow(self, 'Binarize')
         self.rgbEditWindow = RgbEditWindow(self, 'RGB Edit')
 
         self.width = QApplication.desktop().screenGeometry().width() // 2
@@ -126,7 +126,9 @@ class CoolWindow(QMainWindow):
         saveAction.setEnabled(False)
 
         # Toolbar Label for Grayscale
-        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'), 'Convert currently selected image to grayscale.', self)
+        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'),
+                             'Convert currently selected image to grayscale.',
+                             self)
         grayAction.triggered.connect(self.grayscale_clicked)
         grayAction.setEnabled(False)
 
@@ -200,7 +202,6 @@ class CoolWindow(QMainWindow):
         self.binarizationWindow.timerCallback = onTimerReset
         self.binarizationWindow.resetTimer()  # needed because we changed timerCallback
 
-
         # def thread_func(progress_callback, img, binWindow):
         #     #  TODO: maybe figure out a way to remove the timer stuff from here
         #     def onUpdate():
@@ -264,14 +265,16 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', '\n        Ghetto Image Editor v1.0'
-                                               ' \n\n\nGhetto Image Editor was developed as a homework project by Victor Rusu, '
-                                               'Radu Deleanu and Daniel Iovescu.\n\nThe current distribution of the program supports image'
-                                               ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
+        QMessageBox.information(self, 'About', '\n        Ghetto Image Editor v1.0\
+                                               \n\n\nGhetto Image Editor was developed as a homework project by \
+                                               Victor Rusu, Radu Deleanu and Daniel Iovescu.\n\nThe current \
+                                               distribution of the program supports image import and save, grayscale \
+                                               edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):
-        filePath, selectedFilter = QFileDialog.getOpenFileName(self, 'Open Image', '',
-                                               'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
+        filePath, selectedFilter = QFileDialog.\
+            getOpenFileName(self, 'Open Image', '',
+                            'Image Files (*.png; *.jpg; *.bmp; *.gif; *.jpeg; *.pbm; *.pgm; *.ppm; *.xbm; *.xpm)')
         if not filePath:
             return
 
@@ -299,7 +302,6 @@ class CoolWindow(QMainWindow):
 
         self.threadpool.start(worker)
 
-
     def file_save_clicked(self):
         if self.processed_image is None:
             QMessageBox.critical(self, 'Error', 'Something unexpected happened')
@@ -322,11 +324,11 @@ class CoolWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_before_image(self):
-        self.beforeImgPixMap.convertFromImage(self.orig_image)
+        self.beforeImgPixMap.convertFromImage(self.orig_image, 0)
         self.beforeImgLabel.setPixmap(self.beforeImgPixMap)
         self.beforeImgLabel.update()
 
     def update_after_image(self):
-        self.afterImgPixMap.convertFromImage(self.processed_image)
+        self.afterImgPixMap.convertFromImage(self.processed_image, 0)
         self.afterImgLabel.setPixmap(self.afterImgPixMap)
         self.afterImgLabel.update()

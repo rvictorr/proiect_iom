@@ -9,7 +9,7 @@ class RgbEditWindow(QWidget):
     timeOut = 250  # ms
 
     def __init__(self, parent, title):
-        super().__init__(parent)
+        super().__init__(parent, QtCore.Qt.Tool)
         self.setWindowFlags(QtCore.Qt.Tool)
         self.setWindowTitle(title)
 

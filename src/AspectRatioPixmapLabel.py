@@ -26,4 +26,6 @@ class AspectRatioPixmapLabel(QLabel):
             super().setPixmap(self.scaledPixMap())
 
     def heightForWidth(self, width):
-        return self.height() if (self.pix is None or self.pix.width() == 0) else self.pix.height()*width/self.pix.width()
+        return self.height() \
+            if (self.pix is None or self.pix.width() == 0) \
+            else self.pix.height()*width/self.pix.width()
