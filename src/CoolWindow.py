@@ -2,11 +2,11 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThreadPool
-import ImageUtils
-from Worker import Worker
-from BinarizationWindow import BinarizationWindow
-from RgbEditWindow import RgbEditWindow
-from AspectRatioPixmapLabel import AspectRatioPixmapLabel
+from src import ImageUtils
+from src.Worker import Worker
+from src.BinarizationWindow import BinarizationWindow
+from src.RgbEditWindow import RgbEditWindow
+from src.AspectRatioPixmapLabel import AspectRatioPixmapLabel
 
 
 class CoolWindow(QMainWindow):
@@ -181,7 +181,6 @@ class CoolWindow(QMainWindow):
 
         self.binarizationWindow.move(pos)
         self.binarizationWindow.show()
-        self.binarizationWindow.activateWindow()
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
@@ -226,7 +225,6 @@ class CoolWindow(QMainWindow):
 
         self.rgbEditWindow.move(pos)
         self.rgbEditWindow.show()
-        self.rgbEditWindow.activateWindow()
 
         def onTimerReset():
             def thread_func(progress_callback, img, sliderValues):
@@ -266,9 +264,9 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', '\n\n        Ghetto Image Editor v1.0'
-                                               ' \n\n\nGhetto Image Editor was developed as a homework project by Rusu Victor, '
-                                               'Deleanu Radu and Iovescu Daniel.\n\nThe current distributin of the program supports image'
+        QMessageBox.information(self, 'About', '\n        Ghetto Image Editor v1.0'
+                                               ' \n\n\nGhetto Image Editor was developed as a homework project by Victor Rusu, '
+                                               'Radu Deleanu and Daniel Iovescu.\n\nThe current distribution of the program supports image'
                                                ' import and save, grayscale edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):
@@ -289,14 +287,12 @@ class CoolWindow(QMainWindow):
         def finished_func():
             self.update_before_image()
             self.update_after_image()
+
+            self.saveAction.setEnabled(True)
             for action in self.toolBar.actions():
                 action.setEnabled(True)
-            self.saveAction.setEnabled(True)
-            self.grayScaleAction.setEnabled(True)
-            self.binarizeAction.setEnabled(True)
-            self.rgbEditAction.setEnabled(True)
-            self.binarizationWindow.reset()
-            self.rgbEditWindow.reset()
+            for action in self.editMenu.actions():
+                action.setEnabled(True)
 
         worker = Worker(thread_func)
         worker.signals.finished.connect(finished_func)

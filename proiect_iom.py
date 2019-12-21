@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-from CoolWindow import CoolWindow
+from src.CoolWindow import CoolWindow
 
 
 # Function to run App

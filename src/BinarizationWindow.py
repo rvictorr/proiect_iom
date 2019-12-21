@@ -1,7 +1,7 @@
 from threading import Timer
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
-from TextSlider import TextSlider
+from src.TextSlider import TextSlider
 
 
 class BinarizationWindow(QWidget):
@@ -38,6 +38,7 @@ class BinarizationWindow(QWidget):
         self.textSlider1.reset()
         self.textSlider2.reset()
         self.checkBox.setChecked(False)
+
     def checkBoxStateChanged(self, state):
         if state == QtCore.Qt.Checked:
             def slider1ValueChangedCallback(value):
@@ -78,6 +79,9 @@ class BinarizationWindow(QWidget):
         self.updateTimer.cancel()
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
         self.updateTimer.start()
+
+    def showEvent(self, QShowEvent):
+        self.activateWindow()
 
     def getSliderValues(self):
         return self.textSlider1.value(), self.textSlider2.value()

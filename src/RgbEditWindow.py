@@ -1,7 +1,7 @@
 from threading import Timer
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
-from TextSlider import TextSlider
+from src.TextSlider import TextSlider
 
 
 class RgbEditWindow(QWidget):
@@ -54,3 +54,6 @@ class RgbEditWindow(QWidget):
 
     def getSliderValues(self):
         return self.rSlider.value(), self.gSlider.value(), self.bSlider.value()
+
+    def showEvent(self, QShowEvent):
+        self.activateWindow()
