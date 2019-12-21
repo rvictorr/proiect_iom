@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 class TextSlider(QWidget):
 
     def __init__(self, parent, labelText='', min=0, max=99, defaultValue=0):
-        super().__init__(parent, 0)
+        super().__init__(parent)
 
         self.defaultValue = defaultValue
         self.sliderValue = self.defaultValue

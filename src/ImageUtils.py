@@ -4,7 +4,7 @@ import numpy as np
 
 def rgb2grayscale(img: QImage):
     width, height = img.width(), img.height()
-    img.convertTo(QImage.Format_RGB888, 0)
+    img.convertTo(QImage.Format_RGB888)
     ptr = img.constBits()
     realByteCount = img.byteCount()
     calculatedByteCount = width * height * 3
@@ -47,7 +47,7 @@ def binarize(img: QImage, thr1, thr2):
 
 def rgbEdit(img: QImage, rVal, gVal, bVal):
     width, height = img.width(), img.height()
-    img.convertTo(QImage.Format_RGB888, 0)
+    img.convertTo(QImage.Format_RGB888)
     ptr = img.constBits()
 
     realByteCount = img.byteCount()

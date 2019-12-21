@@ -12,7 +12,7 @@ from src.AspectRatioPixmapLabel import AspectRatioPixmapLabel
 class CoolWindow(QMainWindow):
 
     def __init__(self):
-        super(CoolWindow, self).__init__(flags=None)
+        super().__init__(None)
 
         self.threadpool = QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
@@ -265,11 +265,11 @@ class CoolWindow(QMainWindow):
         return False
 
     def help_about_clicked(self):
-        QMessageBox.information(self, 'About', '\n        Ghetto Image Editor v1.0\
-                                               \n\n\nGhetto Image Editor was developed as a homework project by \
-                                               Victor Rusu, Radu Deleanu and Daniel Iovescu.\n\nThe current \
-                                               distribution of the program supports image import and save, grayscale \
-                                               edit, binarization with two threshold levels and RGB edit.')
+        QMessageBox.information(self, 'About', '\n\tGhetto Image Editor v1.0'
+                                               '\n\n\nGhetto Image Editor was developed as a homework project by '
+                                               'Victor Rusu, Radu Deleanu and Daniel Iovescu.\n\nThe current '
+                                               'distribution of the program supports image import and save, grayscale '
+                                               'edit, binarization with two threshold levels and RGB edit.')
 
     def file_open_clicked(self):
         filePath, selectedFilter = QFileDialog.\
@@ -324,11 +324,11 @@ class CoolWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def update_before_image(self):
-        self.beforeImgPixMap.convertFromImage(self.orig_image, 0)
+        self.beforeImgPixMap.convertFromImage(self.orig_image)
         self.beforeImgLabel.setPixmap(self.beforeImgPixMap)
         self.beforeImgLabel.update()
 
     def update_after_image(self):
-        self.afterImgPixMap.convertFromImage(self.processed_image, 0)
+        self.afterImgPixMap.convertFromImage(self.processed_image)
         self.afterImgLabel.setPixmap(self.afterImgPixMap)
         self.afterImgLabel.update()
