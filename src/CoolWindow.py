@@ -39,7 +39,7 @@ class CoolWindow(QMainWindow):
             QApplication.desktop().screenGeometry()
         ))
         self.setWindowTitle('GIE Pro v1.0 (Ghetto Image Editor)')
-        self.setWindowIcon(QIcon('icons/ico_logo.png'))
+        self.setWindowIcon(QIcon('assets/ico_logo.png'))
 
         # Label for fileMenu object Open
         self.openAction = QAction('&Open File', self)
@@ -118,29 +118,29 @@ class CoolWindow(QMainWindow):
         # btn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         # btn.setGeometry(860, 440, 60, 40)
 
-        openAction = QAction(QtGui.QIcon('icons/ico_open.png'), 'Open', self)
+        openAction = QAction(QtGui.QIcon('assets/ico_open.png'), 'Open', self)
         openAction.triggered.connect(self.file_open_clicked)
 
-        saveAction = QAction(QtGui.QIcon('icons/ico_save.png'), 'Save', self)
+        saveAction = QAction(QtGui.QIcon('assets/ico_save.png'), 'Save', self)
         saveAction.triggered.connect(self.file_save_clicked)
         saveAction.setEnabled(False)
 
         # Toolbar Label for Grayscale
-        grayAction = QAction(QtGui.QIcon('icons/ico_grayscale.png'),
+        grayAction = QAction(QtGui.QIcon('assets/ico_grayscale.png'),
                              'Convert currently selected image to grayscale.',
                              self)
         grayAction.triggered.connect(self.grayscale_clicked)
         grayAction.setEnabled(False)
 
         # Toolbar Label for Binarize
-        binarizeAction = QAction(QtGui.QIcon('icons/ico_binarize.png'),
+        binarizeAction = QAction(QtGui.QIcon('assets/ico_binarize.png'),
                                  'Convert currently selected image to binarized image.',
                                  self)
         binarizeAction.triggered.connect(lambda: self.binarize_clicked(QtGui.QCursor.pos()))
         binarizeAction.setEnabled(False)
 
         # Toolbar Label for RGB Edit
-        rgbEditAction = QAction(QtGui.QIcon('icons/ico_rgbEdit.png'),
+        rgbEditAction = QAction(QtGui.QIcon('assets/ico_rgbEdit.png'),
                                 'Edit the RGB values of the currently selected image.',
                                 self)
         rgbEditAction.triggered.connect(lambda: self.rgbEdit_clicked(QtGui.QCursor.pos()))
