@@ -14,10 +14,10 @@ class BinarizeWindow(QWidget):
 
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
 
-        self.setLayout(QVBoxLayout(self))
+        self.setLayout(QVBoxLayout())
 
         self.sliders = QWidget(self)
-        self.sliders.setLayout(QHBoxLayout(self))
+        self.sliders.setLayout(QHBoxLayout())
 
         self.textSlider1 = TextSlider(self, 'Threshold 1', 0, 255, 127)
 

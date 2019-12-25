@@ -11,7 +11,7 @@ class TextSlider(QWidget):
         self.sliderValue = self.defaultValue
         self.onSliderValueChanged = lambda value: value
 
-        self.setLayout(QVBoxLayout(self))
+        self.setLayout(QVBoxLayout())
 
         self.slider = QSlider(self)
         self.slider.setRange(min, max)

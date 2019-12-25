@@ -15,7 +15,7 @@ class RgbEditWindow(QWidget):
 
         self.updateTimer = Timer(self.timeOut / 1000, self.timerCallback)
 
-        self.setLayout(QHBoxLayout(self))
+        self.setLayout(QHBoxLayout())
 
         def sliderValueChangedCallback(value):
             if value > 255:
